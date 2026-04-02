@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>КапРем · ЗАО · Еженедельный отчёт</title>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@300;400;500;600;700;800;900&family=Golos+Text:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#030609;--bg2:#060c14;--bg3:#091018;--bg4:#0d1520;--bg5:#111c28;
+  --b:#132030;--b2:#1a2d40;--b3:#223550;
+  --t:#d8e8ff;--t2:#4a6480;--t3:#1e3048;
+  --orange:#f97316;--orangeL:rgba(249,115,22,.1);
+  --cyan:#06b6d4;--cyanL:rgba(6,182,212,.1);
+  --green:#22c55e;--greenL:rgba(34,197,94,.08);
+  --amber:#f59e0b;--amberL:rgba(245,158,11,.08);
+  --red:#ef4444;--redL:rgba(239,68,68,.08);
+  --purple:#a78bfa;--purpleL:rgba(167,139,250,.08);
+  --blue:#3b82f6;--blueL:rgba(59,130,246,.1);
+}
+html{font-size:14px}
+body{background:var(--bg);color:var(--t);font-family:'Golos Text',sans-serif;min-height:100vh}
+
+/* PRINT */
+@media print {
+  body{background:#fff!important;color:#111!important}
+  .header-nav,.week-selector,.no-print{display:none!important}
+  .report-page{break-inside:avoid;page-break-inside:avoid}
+  *{color:#111!important;border-color:#ddd!important}
+  .kpi-card,.card{background:#f8f9fa!important;border:1px solid #ddd!important}
+  .delta.up{color:#16a34a!important}.delta.down{color:#dc2626!important}
+}
+
+/* HEADER */
+.header{
+  background:linear-gradient(180deg,var(--bg2) 0%,var(--bg) 100%);
+  border-bottom:1px solid var(--b);
+  padding:20px 32px 0;
+  position:sticky;top:0;z-index:100;
+}
+.header-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:16px}
+.logo{font-family:'Unbounded',sans-serif;font-size:11px;font-weight:800;color:var(--orange);letter-spacing:3px;text-transform:uppercase;margin-bottom:4px}
+.logo span{color:var(--t2);font-weight:400;letter-spacing:1px}
+.title{font-family:'Unbounded',sans-serif;font-size:20px;font-weight:700;color:var(--t);margin-bottom:2px}
+.subtitle{font-size:11px;color:var(--t2);font-family:'JetBrains Mono',monospace}
+.header-right{text-align:right}
+.report-num{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--t2);margin-bottom:4px}
+.report-status{display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:20px;font-size:10px;font-weight:700;font-family:'JetBrains Mono',monospace}
+.report-status.live{background:var(--greenL);color:var(--green);border:1px solid rgba(34,197,94,.2)}
+.report-status .dot{width:6px;height:6px;border-radius:50%;background:currentColor;animation:pulse 1.5s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* WEEK SELECTOR */
+.week-selector{
+  display:flex;gap:2px;padding:12px 0 0;
+  border-top:1px solid var(--b);
+  overflow-x:auto;
+}
+.week-btn{
+  padding:8px 14px;font-size:10px;font-weight:600;font-family:'JetBrains Mono',monospace;
+  color:var(--t2);background:none;border:none;cursor:pointer;
+  border-bottom:2px solid transparent;transition:all .2s;white-space:nowrap;
+}
+.week-btn:hover{color:var(--t)}
+.week-btn.active{color:var(--orange);border-bottom-color:var(--orange)}
+.week-btn .wn{font-family:'Unbounded',sans-serif;font-size:13px;font-weight:700;display:block}
+
+/* MAIN */
+.main{max-width:1200px;margin:0 auto;padding:24px 32px}
+
+/* KPI GRID */
+.kpi-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:24px}
+@media(max-width:900px){.kpi-grid{grid-template-columns:repeat(3,1fr)}}
+.kpi-card{
+  background:var(--bg2);border:1px solid var(--b);border-radius:14px;
+  padding:14px 16px;position:relative;overflow:hidden;
+}
+.kpi-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+.kpi-card.o::before{background:var(--orange)}.kpi-card.c::before{background:var(--cyan)}
+.kpi-card.g::before{background:var(--green)}.kpi-card.a::before{background:var(--amber)}
+.kpi-card.r::before{background:var(--red)}.kpi-card.p::before{background:var(--purple)}
+.kpi-card.b::before{background:var(--blue)}
+.kpi-label{font-size:9px;color:var(--t2);text-transform:uppercase;letter-spacing:1.2px;font-weight:700;margin-bottom:6px;font-family:'JetBrains Mono',monospace}
+.kpi-row{display:flex;align-items:baseline;gap:8px}
+.kpi-val{font-family:'Unbounded',sans-serif;font-size:24px;font-weight:800}
+.kpi-card.o .kpi-val{color:var(--orange)}.kpi-card.c .kpi-val{color:var(--cyan)}
+.kpi-card.g .kpi-val{color:var(--green)}.kpi-card.a .kpi-val{color:var(--amber)}
+.kpi-card.r .kpi-val{color:var(--red)}.kpi-card.p .kpi-val{color:var(--purple)}
+.kpi-card.b .kpi-val{color:var(--blue)}
+.delta{font-size:11px;font-weight:700;font-family:'JetBrains Mono',monospace}
+.delta.up{color:var(--green)}.delta.down{color:var(--red)}.delta.flat{color:var(--t2)}
+.kpi-sub{font-size:10px;color:var(--t2);margin-top:3px}
+
+/* SECTION */
+.section{margin-bottom:28px}
+.sec-head{
+  display:flex;align-items:center;gap:10px;margin-bottom:14px;
+  padding-bottom:8px;border-bottom:1px solid var(--b);
+}
+.sec-icon{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.sec-icon.o{background:var(--orangeL);color:var(--orange)}
+.sec-icon.c{background:var(--cyanL);color:var(--cyan)}
+.sec-icon.g{background:var(--greenL);color:var(--green)}
+.sec-icon.a{background:var(--amberL);color:var(--amber)}
+.sec-icon.r{background:var(--redL);color:var(--red)}
+.sec-icon.p{background:var(--purpleL);color:var(--purple)}
+.sec-icon.b{background:var(--blueL);color:var(--blue)}
+.sec-title{font-family:'Unbounded',sans-serif;font-size:13px;font-weight:700;flex:1}
+.sec-badge{font-size:9px;font-family:'JetBrains Mono',monospace;color:var(--t2);padding:3px 8px;background:var(--bg3);border-radius:8px}
+
+/* CARD */
+.card{background:var(--bg2);border:1px solid var(--b);border-radius:14px;padding:18px;margin-bottom:12px}
+.card-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:800px){.card-row{grid-template-columns:1fr}}
+
+/* STATUS FLOW */
+.flow{display:flex;align-items:center;gap:4px;flex-wrap:wrap;margin-bottom:12px}
+.flow-node{
+  padding:10px 14px;border-radius:12px;text-align:center;
+  min-width:100px;flex:1;
+}
+.flow-node .fn-val{font-family:'Unbounded',sans-serif;font-size:22px;font-weight:800;margin-bottom:2px}
+.flow-node .fn-label{font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:1px;opacity:.7}
+.flow-node .fn-delta{font-size:10px;font-family:'JetBrains Mono',monospace;margin-top:2px}
+.flow-arrow{font-size:16px;color:var(--t2);flex-shrink:0}
+
+.flow-node.pending{background:var(--amberL);color:var(--amber);border:1px solid rgba(245,158,11,.15)}
+.flow-node.active{background:var(--cyanL);color:var(--cyan);border:1px solid rgba(6,182,212,.15)}
+.flow-node.progress{background:var(--blueL);color:var(--blue);border:1px solid rgba(59,130,246,.15)}
+.flow-node.done{background:var(--greenL);color:var(--green);border:1px solid rgba(34,197,94,.15)}
+.flow-node.paid{background:var(--purpleL);color:var(--purple);border:1px solid rgba(167,139,250,.15)}
+.flow-node.risk{background:var(--redL);color:var(--red);border:1px solid rgba(239,68,68,.15)}
+
+/* PROGRESS BARS */
+.prog{margin-bottom:12px}
+.prog-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px}
+.prog-name{font-size:11px;font-weight:600}
+.prog-val{font-size:11px;font-weight:700;font-family:'JetBrains Mono',monospace;color:var(--t2)}
+.prog-track{height:20px;background:var(--bg4);border-radius:6px;overflow:hidden;display:flex}
+.prog-seg{height:100%;transition:width .6s cubic-bezier(.22,1,.36,1);position:relative}
+.prog-seg:first-child{border-radius:6px 0 0 6px}
+.prog-seg:last-child{border-radius:0 6px 6px 0}
+.prog-legend{display:flex;gap:14px;margin-top:6px;flex-wrap:wrap}
+.prog-legend-item{display:flex;align-items:center;gap:5px;font-size:9px;color:var(--t2)}
+.prog-legend-dot{width:8px;height:8px;border-radius:2px}
+
+/* RISK TABLE */
+.risk-table{width:100%;border-collapse:collapse;font-size:11px}
+.risk-table th{
+  text-align:left;font-size:9px;font-weight:700;text-transform:uppercase;
+  letter-spacing:.8px;color:var(--t2);padding:8px 10px;
+  border-bottom:1px solid var(--b);font-family:'JetBrains Mono',monospace;
+}
+.risk-table td{padding:8px 10px;border-bottom:1px solid rgba(19,32,48,.5)}
+.risk-table tr:hover{background:var(--bg3)}
+.risk-tag{
+  display:inline-flex;align-items:center;gap:4px;padding:2px 8px;
+  border-radius:8px;font-size:9px;font-weight:700;font-family:'JetBrains Mono',monospace;
+}
+.risk-tag.high{background:var(--redL);color:var(--red)}
+.risk-tag.med{background:var(--amberL);color:var(--amber)}
+.risk-tag.low{background:var(--greenL);color:var(--green)}
+.risk-tag .rd{width:5px;height:5px;border-radius:50%;background:currentColor}
+
+/* CONTRACTOR RANK */
+.rank-item{
+  display:flex;align-items:center;gap:12px;
+  padding:10px 14px;border-radius:10px;margin-bottom:6px;
+  background:var(--bg3);border:1px solid var(--b);
+  transition:border-color .2s;
+}
+.rank-item:hover{border-color:var(--b2)}
+.rank-pos{
+  width:28px;height:28px;border-radius:8px;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Unbounded',sans-serif;font-size:13px;font-weight:800;
+  flex-shrink:0;
+}
+.rank-pos.gold{background:rgba(251,191,36,.15);color:#fbbf24}
+.rank-pos.silver{background:rgba(148,163,184,.12);color:#94a3b8}
+.rank-pos.bronze{background:rgba(217,119,6,.12);color:#d97706}
+.rank-pos.normal{background:var(--bg4);color:var(--t2)}
+.rank-info{flex:1;min-width:0}
+.rank-name{font-size:11px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rank-meta{font-size:9px;color:var(--t2);font-family:'JetBrains Mono',monospace;margin-top:1px}
+.rank-score{text-align:right}
+.rank-score-val{font-family:'Unbounded',sans-serif;font-size:16px;font-weight:700}
+.rank-score-label{font-size:8px;color:var(--t2);text-transform:uppercase;font-family:'JetBrains Mono',monospace}
+
+/* WEEKLY CHART (sparkline-style) */
+.spark-row{display:flex;align-items:flex-end;gap:3px;height:80px;padding:8px 0}
+.spark-bar{flex:1;border-radius:4px 4px 0 0;position:relative;transition:all .3s;min-width:14px;cursor:pointer}
+.spark-bar:hover{filter:brightness(1.2)}
+.spark-bar .spark-tip{
+  display:none;position:absolute;bottom:100%;left:50%;transform:translateX(-50%);
+  background:var(--bg5);border:1px solid var(--b2);border-radius:6px;
+  padding:4px 8px;font-size:9px;white-space:nowrap;z-index:10;
+  font-family:'JetBrains Mono',monospace;
+}
+.spark-bar:hover .spark-tip{display:block}
+.spark-labels{display:flex;gap:3px}
+.spark-labels span{flex:1;text-align:center;font-size:8px;color:var(--t2);font-family:'JetBrains Mono',monospace;min-width:14px}
+
+/* WATERFALL */
+.waterfall{display:flex;align-items:flex-end;gap:2px;height:120px;padding:8px 0}
+.wf-col{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%}
+.wf-bar{width:100%;border-radius:4px 4px 0 0;position:relative;transition:height .6s;min-height:2px}
+.wf-label{font-size:8px;color:var(--t2);text-align:center;margin-top:4px;font-family:'JetBrains Mono',monospace}
+.wf-val{font-size:9px;font-weight:700;font-family:'JetBrains Mono',monospace;margin-bottom:2px}
+
+/* EVENT LOG */
+.event{display:flex;gap:12px;padding:8px 0;border-bottom:1px solid rgba(19,32,48,.3)}
+.event:last-child{border-bottom:none}
+.event-dot-wrap{display:flex;flex-direction:column;align-items:center;padding-top:4px}
+.event-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.event-dot.g{background:var(--green)}.event-dot.a{background:var(--amber)}.event-dot.r{background:var(--red)}.event-dot.c{background:var(--cyan)}.event-dot.o{background:var(--orange)}
+.event-line{width:1px;flex:1;background:var(--b);margin-top:4px}
+.event-body{flex:1}
+.event-title{font-size:12px;font-weight:700;margin-bottom:2px}
+.event-desc{font-size:10px;color:var(--t2)}
+.event-time{font-size:9px;color:var(--t3);font-family:'JetBrains Mono',monospace;margin-top:2px}
+
+/* SUMMARY BOX */
+.summary-box{
+  background:linear-gradient(135deg,rgba(249,115,22,.06),rgba(6,182,212,.04));
+  border:1px solid rgba(249,115,22,.15);border-radius:14px;
+  padding:18px;margin-bottom:24px;
+}
+.summary-title{font-family:'Unbounded',sans-serif;font-size:12px;font-weight:700;color:var(--orange);margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.summary-text{font-size:12px;line-height:1.7;color:var(--t)}
+.summary-text b{color:var(--cyan);font-weight:700}
+.summary-text .up{color:var(--green)}.summary-text .dn{color:var(--red)}.summary-text .warn{color:var(--amber)}
+
+/* FOOTER */
+.footer{
+  margin-top:32px;padding:20px 0;border-top:1px solid var(--b);
+  display:flex;justify-content:space-between;align-items:center;
+  font-size:9px;color:var(--t2);font-family:'JetBrains Mono',monospace;
+}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--b);border-radius:3px}
+</style>
+</head>
+<body>
+<a href="index.html" style="position:fixed;top:12px;right:12px;z-index:9999;padding:6px 14px;background:rgba(10,10,15,0.85);border:1px solid #2a2a3a;border-radius:20px;color:#888;font-size:11px;font-family:JetBrains Mono,monospace;text-decoration:none;backdrop-filter:blur(8px);transition:all .2s" onmouseover="this.style.color='#f97316';this.style.borderColor='#f97316'" onmouseout="this.style.color='#888';this.style.borderColor='#2a2a3a'">← Главная</a>
+
+<div class="header">
+  <div class="header-top">
+    <div>
+      <div class="logo">КапРем <span>· Еженедельный отчёт</span></div>
+      <div class="title">Фасады · ЗАО</div>
+      <div class="subtitle" id="week-range">31 марта — 6 апреля 2026</div>
+    </div>
+    <div class="header-right">
+      <div class="report-num" id="report-num">Отчёт №14 / 2026</div>
+      <div class="report-status live"><span class="dot"></span>Актуальный</div>
+    </div>
+  </div>
+  <div class="week-selector" id="week-selector"></div>
+</div>
+
+<div class="main">
+  <!-- EXECUTIVE SUMMARY -->
+  <div class="summary-box" id="summary-box"></div>
+
+  <!-- KPIs -->
+  <div class="kpi-grid" id="kpi-grid"></div>
+
+  <!-- STATUS FLOW -->
+  <div class="section">
+    <div class="sec-head">
+      <div class="sec-icon c">⚡</div>
+      <div class="sec-title">Динамика статусов</div>
+      <div class="sec-badge">неделя к неделе</div>
+    </div>
+    <div class="card">
+      <div class="flow" id="status-flow"></div>
+      <div class="prog" id="status-prog">
+        <div class="prog-head">
+          <span class="prog-name">Общий прогресс программы</span>
+          <span class="prog-val" id="prog-pct"></span>
+        </div>
+        <div class="prog-track" id="prog-track"></div>
+        <div class="prog-legend" id="prog-legend"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- WEEKLY DYNAMICS CHART -->
+  <div class="section">
+    <div class="sec-head">
+      <div class="sec-icon o">📊</div>
+      <div class="sec-title">Недельная динамика</div>
+      <div class="sec-badge">тренды 10 недель</div>
+    </div>
+    <div class="card-row">
+      <div class="card">
+        <div style="font-size:10px;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;font-family:'JetBrains Mono',monospace">Приступили к работам</div>
+        <div class="spark-row" id="spark-started"></div>
+        <div class="spark-labels" id="spark-labels-started"></div>
+      </div>
+      <div class="card">
+        <div style="font-size:10px;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;font-family:'JetBrains Mono',monospace">Установлено БГ (накопительно)</div>
+        <div class="spark-row" id="spark-bg"></div>
+        <div class="spark-labels" id="spark-labels-bg"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- WATERFALL: STATUS TRANSITIONS -->
+  <div class="section">
+    <div class="sec-head">
+      <div class="sec-icon g">🔄</div>
+      <div class="sec-title">Переходы статусов за неделю</div>
+      <div class="sec-badge" id="transitions-count"></div>
+    </div>
+    <div class="card" id="transitions-card"></div>
+  </div>
+
+  <!-- RISKS -->
+  <div class="section">
+    <div class="sec-head">
+      <div class="sec-icon r">⚠️</div>
+      <div class="sec-title">Зона риска</div>
+      <div class="sec-badge" id="risk-count"></div>
+    </div>
+    <div class="card">
+      <table class="risk-table" id="risk-table">
+        <thead><tr><th>Объект</th><th>Риск</th><th>Причина</th><th>Подрядчик</th><th>Действие</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- CONTRACTOR RANKINGS -->
+  <div class="section">
+    <div class="sec-head">
+      <div class="sec-icon p">🏆</div>
+      <div class="sec-title">Рейтинг подрядчиков</div>
+      <div class="sec-badge">по готовности</div>
+    </div>
+    <div class="card-row">
+      <div class="card" id="rank-top" style="flex:1"></div>
+      <div class="card" id="rank-bottom" style="flex:1"></div>
+    </div>
+  </div>
+
+  <!-- EVENT LOG -->
+  <div class="section">
+    <div class="sec-head">
+      <div class="sec-icon a">📋</div>
+      <div class="sec-title">Ключевые события недели</div>
+    </div>
+    <div class="card" id="events-card"></div>
+  </div>
+
+  <!-- BG STATUS -->
+  <div class="section">
+    <div class="sec-head">
+      <div class="sec-icon b">🏦</div>
+      <div class="sec-title">Банковские гарантии</div>
+    </div>
+    <div class="card" id="bg-card"></div>
+  </div>
+
+  <div class="footer">
+    <div>КапРем · Система контроля капитального ремонта · ЗАО Москва</div>
+    <div id="footer-gen">Сформировано: 06.04.2026 08:00</div>
+  </div>
+</div>
+
+<script>
+// ===== SIMULATED WEEKLY DATA =====
+// 10 weeks of simulated progression for ЗАО facades
+const WEEKS = [
+  { num:10, range:'3–9 марта', date:'09.03.2026',
+    total:63, started:0, working:0, done95:0, done:0, paid:0, excluded:0, notStarted:6, bgInstalled:18, bgProcess:3, bgNotInstalled:20, bgCluster:8, bgNotReq:11, costTotal:3298,
+    newStarted:0, newBG:0, transitions:[], risks:[], events:[
+      {type:'c',title:'Подготовка программы',desc:'Утверждён список из 63 МКД на фасады ЗАО',time:'04.03'},
+      {type:'a',title:'ПСД в работе',desc:'24 объекта Модернизации — ПСД на экспертизе',time:'06.03'},
+    ]
+  },
+  { num:11, range:'10–16 марта', date:'16.03.2026',
+    total:63, started:0, working:0, done95:0, done:0, paid:0, excluded:0, notStarted:6, bgInstalled:20, bgProcess:4, bgNotInstalled:18, bgCluster:8, bgNotReq:11, costTotal:3298,
+    newStarted:0, newBG:2, transitions:[{from:'Не установлен',to:'Установлен',count:2}], risks:[
+      {addr:'Рублевское шоссе 22 к.1',risk:'high',reason:'БГ не установлен, подрядчик не отвечает',contractor:'ООО «ДОМ-СТРОЙ»',action:'Направлено уведомление'},
+      {addr:'Рублевское шоссе 24 к.1',risk:'high',reason:'БГ не установлен, отсутствие субподрядчика',contractor:'ООО «СК ЗЕНИТ»',action:'Рассматривается замена'},
+    ], events:[
+      {type:'g',title:'+2 БГ установлены',desc:'Крылатские Холмы 30 к.3, Анохина 44',time:'12.03'},
+      {type:'a',title:'Проблема с подрядчиком',desc:'ООО «СК ЗЕНИТ» — задержка подготовки документов',time:'14.03'},
+    ]
+  },
+  { num:12, range:'17–23 марта', date:'23.03.2026',
+    total:63, started:0, working:0, done95:0, done:0, paid:0, excluded:0, notStarted:6, bgInstalled:22, bgProcess:5, bgNotInstalled:16, bgCluster:8, bgNotReq:11, costTotal:3298,
+    newStarted:0, newBG:2, transitions:[{from:'Не установлен',to:'Установлен',count:2}], risks:[
+      {addr:'Рублевское шоссе 22 к.1',risk:'high',reason:'Рекомендовано исключение',contractor:'ООО «ДОМ-СТРОЙ»',action:'Исключение на рассмотрении'},
+      {addr:'Рублевское шоссе 24 к.1',risk:'high',reason:'Подрядчик подал заявление о расторжении',contractor:'ООО «СК ЗЕНИТ»',action:'Конкурс на замену'},
+    ], events:[
+      {type:'g',title:'+2 БГ установлены',desc:'Мичуринский 25 к.1, Филевский бульв. 17',time:'19.03'},
+      {type:'r',title:'Исключение объектов',desc:'Рублевское шоссе 22 к.1 и 24 к.1 — подготовка к исключению',time:'21.03'},
+    ]
+  },
+  { num:13, range:'24–30 марта', date:'30.03.2026',
+    total:63, started:0, working:0, done95:0, done:0, paid:2, excluded:2, notStarted:6, bgInstalled:24, bgProcess:5, bgNotInstalled:13, bgCluster:8, bgNotReq:11, costTotal:3298,
+    newStarted:0, newBG:2, transitions:[{from:'Не установлен',to:'Установлен',count:2},{from:'Начало',to:'Исключение',count:2}], risks:[
+      {addr:'Новоорловская ул. 12',risk:'med',reason:'БГ не установлен, старт 01.05',contractor:'ООО «ДОМ-СТРОЙ»',action:'Контроль установки БГ'},
+      {addr:'Можайское шоссе 21',risk:'med',reason:'БГ не установлен, старт 01.05',contractor:'ООО «БИРС-С»',action:'Контроль установки БГ'},
+      {addr:'Никулинская ул. 9',risk:'med',reason:'БГ не установлен, старт 01.05',contractor:'ООО «СТРОЙАЛЬЯНС»',action:'Контроль установки БГ'},
+    ], events:[
+      {type:'g',title:'+2 БГ установлены',desc:'Заречная 1 к.1, Аминьевское шоссе 13',time:'25.03'},
+      {type:'r',title:'Объекты исключены',desc:'Рублевское ш. 22 к.1 и 24 к.1 — утверждено исключение',time:'27.03'},
+      {type:'o',title:'Готовность к старту 1 апреля',desc:'18 объектов подтвердили готовность к 01.04',time:'29.03'},
+    ]
+  },
+  { num:14, range:'31 марта — 6 апреля', date:'06.04.2026',
+    total:63, started:5, working:5, done95:0, done:0, paid:2, excluded:2, notStarted:6, bgInstalled:26, bgProcess:5, bgNotInstalled:13, bgCluster:8, bgNotReq:11, costTotal:3298,
+    newStarted:5, newBG:2, transitions:[{from:'Не начаты',to:'В работе',count:5},{from:'Не установлен',to:'Установлен',count:2}], risks:[
+      {addr:'Новоорловская ул. 12',risk:'med',reason:'БГ не установлен',contractor:'ООО «ДОМ-СТРОЙ»',action:'Срок до 15.04'},
+      {addr:'Тимошенко Маршала 46',risk:'med',reason:'БГ не установлен, старт 01.05',contractor:'ООО «ММ-СТРОЙ»',action:'На контроле'},
+      {addr:'Барвихинская 4 к.1',risk:'low',reason:'Приступили, замечания по ОТ',contractor:'ООО «БИРС-С»',action:'Устранение до 08.04'},
+    ], events:[
+      {type:'g',title:'Старт работ — 5 объектов',desc:'Крылатские Холмы 30 к.3 и к.5, 26 Бакинских Комиссаров 12 к.6, Анохина 44, Анохина 46 к.1',time:'01.04'},
+      {type:'g',title:'+2 БГ установлены',desc:'Кутузовский 18, Студенческая 34',time:'02.04'},
+      {type:'c',title:'Первые фотоотчёты',desc:'5 объектов загрузили стартовые фото в КапРем',time:'04.04'},
+    ]
+  },
+  { num:15, range:'7–13 апреля', date:'13.04.2026',
+    total:63, started:22, working:22, done95:0, done:0, paid:2, excluded:2, notStarted:6, bgInstalled:26, bgProcess:5, bgNotInstalled:13, bgCluster:8, bgNotReq:11, costTotal:3298,
+    newStarted:17, newBG:0, transitions:[{from:'Не начаты',to:'В работе',count:17}], risks:[
+      {addr:'Новоорловская ул. 12',risk:'med',reason:'БГ всё ещё не установлен',contractor:'ООО «ДОМ-СТРОЙ»',action:'Предупреждение подрядчику'},
+      {addr:'Рублевское ш. 91 к.4',risk:'med',reason:'Подрядчик не подал заявку на разрешение',contractor:'ООО «РЭО СЕРВИС ПЛЮС»',action:'Совещание 14.04'},
+    ], events:[
+      {type:'g',title:'Массовый старт — 17 объектов',desc:'Пакетный запуск 11 апреля: объекты с датой начала 11.04',time:'11.04'},
+      {type:'o',title:'Установка лесов',desc:'12 объектов начали монтаж строительных лесов',time:'09.04'},
+      {type:'a',title:'Замечание по ОТ',desc:'Кутузовский просп. 18 — замечание от инспекции',time:'12.04'},
+    ]
+  },
+  { num:16, range:'14–20 апреля', date:'20.04.2026',
+    total:63, started:38, working:36, done95:2, done:0, paid:2, excluded:2, notStarted:6, bgInstalled:28, bgProcess:3, bgNotInstalled:11, bgCluster:8, bgNotReq:11, costTotal:3298,
+    newStarted:16, newBG:2, transitions:[{from:'Не начаты',to:'В работе',count:16},{from:'В работе',to:'95%',count:2},{from:'Не установлен',to:'Установлен',count:2}], risks:[
+      {addr:'Новоорловская ул. 12',risk:'high',reason:'Критическое отставание по БГ',contractor:'ООО «ДОМ-СТРОЙ»',action:'Уведомление о расторжении'},
+    ], events:[
+      {type:'g',title:'+16 объектов в работе',desc:'Старт 21.04: Барвихинская 4 к.1-к.2 и ещё 14 объектов',time:'21.04'},
+      {type:'g',title:'2 объекта на 95%',desc:'Заречная 1 к.2, Филевский бульв. 17 — досрочное завершение',time:'18.04'},
+      {type:'g',title:'+2 БГ',desc:'Никулинская 15 к.2, Никулинская 19',time:'16.04'},
+    ]
+  },
+  { num:17, range:'21–27 апреля', date:'27.04.2026',
+    total:63, started:48, working:40, done95:5, done:3, paid:2, excluded:2, notStarted:4, bgInstalled:30, bgProcess:3, bgNotInstalled:9, bgCluster:8, bgNotReq:11, costTotal:3298,
+    newStarted:10, newBG:2, transitions:[{from:'Не начаты',to:'В работе',count:10},{from:'В работе',to:'95%',count:3},{from:'95%',to:'Завершена',count:3},{from:'Не установлен',to:'Установлен',count:2}], risks:[
+      {addr:'Рублевское ш. 91 к.4',risk:'med',reason:'Отставание от графика на 5 дней',contractor:'ООО «РЭО СЕРВИС ПЛЮС»',action:'Наращивание бригад'},
+    ], events:[
+      {type:'g',title:'Первые завершения!',desc:'3 объекта КБУ завершены: Заречная 1 к.2, Филевский бульв. 17, Кастанаевская 62',time:'24.04'},
+      {type:'g',title:'+10 в работе',desc:'Набор темпа — 48 из 63 объектов в активной фазе',time:'21.04'},
+      {type:'c',title:'Контроль качества',desc:'Проведена выездная проверка 8 объектов — без замечаний',time:'25.04'},
+    ]
+  },
+  { num:18, range:'28 апреля — 4 мая', date:'04.05.2026',
+    total:63, started:55, working:42, done95:6, done:5, paid:2, excluded:2, notStarted:1, bgInstalled:32, bgProcess:2, bgNotInstalled:8, bgCluster:8, bgNotReq:11, costTotal:3298,
+    newStarted:7, newBG:2, transitions:[{from:'Не начаты',to:'В работе',count:7},{from:'В работе',to:'95%',count:1},{from:'95%',to:'Завершена',count:2},{from:'Не установлен',to:'Установлен',count:2}], risks:[], events:[
+      {type:'g',title:'Майские объекты в работе',desc:'Запуск 5 объектов с датой начала 01.05',time:'01.05'},
+      {type:'g',title:'+2 завершены',desc:'Крылатские Холмы 30 к.3 и к.5',time:'02.05'},
+      {type:'o',title:'Низкий уровень рисков',desc:'Все критические риски устранены к текущей дате',time:'04.05'},
+    ]
+  },
+  { num:19, range:'5–11 мая', date:'11.05.2026',
+    total:63, started:57, working:38, done95:9, done:8, paid:2, excluded:2, notStarted:0, bgInstalled:34, bgProcess:1, bgNotInstalled:7, bgCluster:8, bgNotReq:11, costTotal:3298,
+    newStarted:2, newBG:2, transitions:[{from:'Не начаты',to:'В работе',count:2},{from:'В работе',to:'95%',count:3},{from:'95%',to:'Завершена',count:3}], risks:[], events:[
+      {type:'g',title:'Все объекты запущены',desc:'Последние 2 объекта вошли в активную фазу — 0 не начатых',time:'06.05'},
+      {type:'g',title:'8 объектов завершены',desc:'Превышение плана на 2 объекта',time:'10.05'},
+      {type:'p',title:'Визит руководства',desc:'Зам. генерального директора ФКР проинспектировал 4 объекта',time:'08.05'},
+    ]
+  },
+];
+
+let currentWeekIdx = 4; // Default: week 14
+
+// RENDER WEEK SELECTOR
+function renderWeekSelector() {
+  const el = document.getElementById('week-selector');
+  el.innerHTML = WEEKS.map((w,i)=>
+    `<button class="week-btn ${i===currentWeekIdx?'active':''}" data-idx="${i}">
+      <span class="wn">Н${w.num}</span>${w.range.split('–')[0].split('—')[0].trim()}
+    </button>`
+  ).join('');
+  el.querySelectorAll('.week-btn').forEach(b=>b.addEventListener('click',()=>{
+    currentWeekIdx=+b.dataset.idx;
+    renderAll();
+  }));
+}
+
+function renderAll() {
+  const w = WEEKS[currentWeekIdx];
+  const prev = currentWeekIdx > 0 ? WEEKS[currentWeekIdx-1] : null;
+  
+  // Update header
+  document.getElementById('week-range').textContent = w.range + ' 2026';
+  document.getElementById('report-num').textContent = `Отчёт №${w.num} / 2026`;
+  document.getElementById('footer-gen').textContent = `Сформировано: ${w.date} 08:00`;
+  renderWeekSelector();
+  
+  // EXECUTIVE SUMMARY
+  const activeWork = w.working || 0;
+  const totalProgress = ((w.done + w.paid + (w.done95||0)) / (w.total - w.excluded) * 100).toFixed(0);
+  const summaryEl = document.getElementById('summary-box');
+  summaryEl.innerHTML = `
+    <div class="summary-title">📌 Резюме для руководства</div>
+    <div class="summary-text">
+      Программа фасадов ЗАО: <b>${w.total} объектов</b> (${w.excluded} исключены).
+      На текущую неделю <b class="up">${w.started} приступили к работам</b>${prev ? ` (<span class="up">+${w.newStarted}</span> за неделю)` : ''}.
+      ${w.done > 0 ? `<b class="up">${w.done} завершены</b>, ` : ''}${(w.done95||0) > 0 ? `<b>${w.done95} на стадии 95%</b>, ` : ''}
+      ${w.notStarted > 0 ? `<span class="warn">${w.notStarted} ожидают наступления срока</span>` : '<span class="up">все объекты запущены</span>'}.
+      БГ установлены: <b>${w.bgInstalled}</b> из ${w.total - w.bgNotReq - w.excluded}.
+      ${w.risks.length > 0 ? `<span class="dn">⚠ ${w.risks.filter(r=>r.risk==='high').length} критических рисков</span>.` : '<span class="up">Критических рисков нет.</span>'}
+      Общая стоимость программы: <b>${(w.costTotal/1000).toFixed(1)} млрд ₽</b>.
+    </div>`;
+  
+  // KPIs
+  const d = (cur,prev,key) => {
+    if(!prev) return {text:'—',cls:'flat'};
+    const diff = cur[key] - prev[key];
+    if(diff>0) return {text:`+${diff}`,cls:'up'};
+    if(diff<0) return {text:`${diff}`,cls:'down'};
+    return {text:'=',cls:'flat'};
+  };
+  const kpis = [
+    {label:'Всего МКД',val:w.total-w.excluded,delta:d(w,prev,'total'),sub:`${w.excluded} исключено`,cls:'o'},
+    {label:'В работе',val:activeWork,delta:prev?{text:`+${w.newStarted}`,cls:w.newStarted>0?'up':'flat'}:{text:'—',cls:'flat'},sub:'приступили',cls:'c'},
+    {label:'Готовность 95%+',val:(w.done95||0),delta:d(w,prev,'done95'),sub:'объектов',cls:'a'},
+    {label:'Завершены',val:w.done,delta:d(w,prev,'done'),sub:'выпущен акт',cls:'g'},
+    {label:'Зона риска',val:w.risks.filter(r=>r.risk==='high').length,delta:null,sub:`из ${w.risks.length} на контроле`,cls:w.risks.some(r=>r.risk==='high')?'r':'g'},
+  ];
+  document.getElementById('kpi-grid').innerHTML = kpis.map(k=>
+    `<div class="kpi-card ${k.cls}">
+      <div class="kpi-label">${k.label}</div>
+      <div class="kpi-row">
+        <div class="kpi-val">${k.val}</div>
+        ${k.delta?`<div class="delta ${k.delta.cls}">${k.delta.text}</div>`:''}
+      </div>
+      <div class="kpi-sub">${k.sub}</div>
+    </div>`
+  ).join('');
+  
+  // STATUS FLOW
+  const flowData = [
+    {cls:'pending',val:w.notStarted,label:'Ожидание',delta:prev?w.notStarted-prev.notStarted:0},
+    {cls:'active',val:activeWork,label:'В работе',delta:prev?activeWork-(prev.working||0):0},
+    {cls:'progress',val:w.done95||0,label:'95%',delta:prev?(w.done95||0)-(prev.done95||0):0},
+    {cls:'done',val:w.done,label:'Завершены',delta:prev?w.done-prev.done:0},
+    {cls:'paid',val:w.paid,label:'Оплачены',delta:prev?w.paid-prev.paid:0},
+    {cls:'risk',val:w.excluded,label:'Исключены',delta:prev?w.excluded-prev.excluded:0},
+  ];
+  document.getElementById('status-flow').innerHTML = flowData.map((f,i)=>
+    `${i>0?'<div class="flow-arrow">→</div>':''}
+    <div class="flow-node ${f.cls}">
+      <div class="fn-val">${f.val}</div>
+      <div class="fn-label">${f.label}</div>
+      ${f.delta!==0?`<div class="fn-delta">${f.delta>0?'+':''}${f.delta}</div>`:''}
+    </div>`
+  ).join('');
+  
+  // PROGRESS BAR
+  const active = w.total - w.excluded;
+  const segs = [
+    {pct:(w.paid/active*100),color:'var(--purple)',label:'Оплачен',count:w.paid},
+    {pct:(w.done/active*100),color:'var(--green)',label:'Завершён',count:w.done},
+    {pct:((w.done95||0)/active*100),color:'var(--amber)',label:'95%',count:w.done95||0},
+    {pct:(activeWork/active*100),color:'var(--cyan)',label:'В работе',count:activeWork},
+    {pct:(w.notStarted/active*100),color:'var(--b2)',label:'Ожидание',count:w.notStarted},
+  ];
+  document.getElementById('prog-pct').textContent = `${((w.done+w.paid+(w.done95||0))/active*100).toFixed(0)}% завершено`;
+  document.getElementById('prog-track').innerHTML = segs.filter(s=>s.pct>0).map(s=>
+    `<div class="prog-seg" style="width:${s.pct}%;background:${s.color}"></div>`
+  ).join('');
+  document.getElementById('prog-legend').innerHTML = segs.filter(s=>s.count>0).map(s=>
+    `<div class="prog-legend-item"><div class="prog-legend-dot" style="background:${s.color}"></div>${s.label} (${s.count})</div>`
+  ).join('');
+  
+  // SPARKLINES
+  function renderSpark(containerId, labelsId, dataKey, color) {
+    const vals = WEEKS.map(wk=>wk[dataKey]);
+    const max = Math.max(...vals, 1);
+    document.getElementById(containerId).innerHTML = WEEKS.map((wk,i)=>{
+      const h = (vals[i]/max*100).toFixed(0);
+      const isActive = i === currentWeekIdx;
+      return `<div class="spark-bar" style="height:${Math.max(h,4)}%;background:${isActive?color:'var(--b2)'};opacity:${isActive?1:0.6}">
+        <div class="spark-tip">Н${wk.num}: ${vals[i]}</div>
+      </div>`;
+    }).join('');
+    document.getElementById(labelsId).innerHTML = WEEKS.map(wk=>`<span>Н${wk.num}</span>`).join('');
+  }
+  renderSpark('spark-started','spark-labels-started','started','var(--cyan)');
+  renderSpark('spark-bg','spark-labels-bg','bgInstalled','var(--green)');
+  
+  // TRANSITIONS
+  document.getElementById('transitions-count').textContent = `${w.transitions.length} переходов`;
+  const tColors = {'Не начаты':'var(--amber)','В работе':'var(--cyan)','95%':'var(--amber)','Завершена':'var(--green)','Исключение':'var(--red)','Не установлен':'var(--red)','Установлен':'var(--green)'};
+  if(w.transitions.length === 0) {
+    document.getElementById('transitions-card').innerHTML = '<div style="text-align:center;padding:20px;color:var(--t2);font-size:12px">Нет переходов на этой неделе</div>';
+  } else {
+    document.getElementById('transitions-card').innerHTML = w.transitions.map(tr=>
+      `<div style="display:flex;align-items:center;gap:12px;padding:8px 0;border-bottom:1px solid var(--b)">
+        <div style="flex:1;text-align:right">
+          <span style="padding:4px 10px;border-radius:8px;font-size:11px;font-weight:700;background:${tColors[tr.from]||'var(--b2)'}20;color:${tColors[tr.from]||'var(--t2)'}">${tr.from}</span>
+        </div>
+        <div style="font-family:'Unbounded',sans-serif;font-size:18px;font-weight:800;color:var(--orange);min-width:40px;text-align:center">${tr.count}</div>
+        <div style="font-size:16px;color:var(--t2)">→</div>
+        <div style="flex:1">
+          <span style="padding:4px 10px;border-radius:8px;font-size:11px;font-weight:700;background:${tColors[tr.to]||'var(--b2)'}20;color:${tColors[tr.to]||'var(--t2)'}">${tr.to}</span>
+        </div>
+      </div>`
+    ).join('');
+  }
+  
+  // RISKS
+  const riskTbody = document.querySelector('#risk-table tbody');
+  document.getElementById('risk-count').textContent = `${w.risks.length} объектов`;
+  if(w.risks.length === 0) {
+    riskTbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:16px;color:var(--green);font-weight:700">✅ Критических рисков нет</td></tr>';
+  } else {
+    riskTbody.innerHTML = w.risks.map(r=>
+      `<tr>
+        <td style="font-weight:700">${r.addr}</td>
+        <td><span class="risk-tag ${r.risk}"><span class="rd"></span>${r.risk==='high'?'ВЫСОКИЙ':r.risk==='med'?'СРЕДНИЙ':'НИЗКИЙ'}</span></td>
+        <td style="font-size:10px;color:var(--t2)">${r.reason}</td>
+        <td style="font-size:10px">${r.contractor}</td>
+        <td style="font-size:10px;color:var(--amber)">${r.action}</td>
+      </tr>`
+    ).join('');
+  }
+  
+  // CONTRACTOR RANKINGS (simulated scores)
+  const contractors = [
+    {name:'АНО «МЛСТ»', objects:5, score:95},
+    {name:'АНО «МВС СТ»', objects:10, score:88},
+    {name:'ГБУ «ОЗЕЛЕНЕНИЕ»', objects:4, score:85},
+    {name:'ООО «ПЕРСПЕКТИВ»', objects:4, score:82},
+    {name:'ООО «БИРС-С»', objects:3, score:78},
+    {name:'ЗАО РСФ «РЕМСТРОЙСЕРВИС»', objects:2, score:76},
+    {name:'ООО «ММ-СТРОЙ»', objects:3, score:72},
+    {name:'ООО «ДОМ-СТРОЙ»', objects:6, score:65},
+    {name:'ООО «РЭО СЕРВИС ПЛЮС»', objects:3, score:58},
+    {name:'ООО «СК ЗЕНИТ»', objects:1, score:30},
+  ];
+  
+  const posClass = (i) => i===0?'gold':i===1?'silver':i===2?'bronze':'normal';
+  const scoreColor = (s) => s>=80?'var(--green)':s>=60?'var(--amber)':'var(--red)';
+  
+  document.getElementById('rank-top').innerHTML = `
+    <div style="font-size:10px;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;font-family:'JetBrains Mono',monospace">🟢 Лидеры</div>
+    ${contractors.slice(0,5).map((c,i)=>
+      `<div class="rank-item">
+        <div class="rank-pos ${posClass(i)}">${i+1}</div>
+        <div class="rank-info">
+          <div class="rank-name">${c.name}</div>
+          <div class="rank-meta">${c.objects} объектов</div>
+        </div>
+        <div class="rank-score">
+          <div class="rank-score-val" style="color:${scoreColor(c.score)}">${c.score}</div>
+          <div class="rank-score-label">балл</div>
+        </div>
+      </div>`
+    ).join('')}`;
+  
+  document.getElementById('rank-bottom').innerHTML = `
+    <div style="font-size:10px;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;font-family:'JetBrains Mono',monospace">🔴 Отстающие</div>
+    ${contractors.slice(5).map((c,i)=>
+      `<div class="rank-item">
+        <div class="rank-pos normal">${i+6}</div>
+        <div class="rank-info">
+          <div class="rank-name">${c.name}</div>
+          <div class="rank-meta">${c.objects} объектов</div>
+        </div>
+        <div class="rank-score">
+          <div class="rank-score-val" style="color:${scoreColor(c.score)}">${c.score}</div>
+          <div class="rank-score-label">балл</div>
+        </div>
+      </div>`
+    ).join('')}`;
+  
+  // EVENTS
+  document.getElementById('events-card').innerHTML = w.events.map((e,i)=>
+    `<div class="event">
+      <div class="event-dot-wrap">
+        <div class="event-dot ${e.type}"></div>
+        ${i<w.events.length-1?'<div class="event-line"></div>':''}
+      </div>
+      <div class="event-body">
+        <div class="event-title">${e.title}</div>
+        <div class="event-desc">${e.desc}</div>
+        <div class="event-time">${e.time}</div>
+      </div>
+    </div>`
+  ).join('');
+  
+  // BG STATUS
+  const bgData = [
+    {label:'Установлен',val:w.bgInstalled,color:'var(--green)',bg:'var(--greenL)'},
+    {label:'В процессе',val:w.bgProcess,color:'var(--amber)',bg:'var(--amberL)'},
+    {label:'Куст',val:w.bgCluster,color:'var(--blue)',bg:'var(--blueL)'},
+    {label:'Не установлен',val:w.bgNotInstalled,color:'var(--red)',bg:'var(--redL)'},
+    {label:'Не требуется',val:w.bgNotReq,color:'var(--t2)',bg:'var(--bg4)'},
+  ];
+  const bgActive = w.total - w.excluded - w.bgNotReq;
+  document.getElementById('bg-card').innerHTML = `
+    <div class="prog" style="margin-bottom:16px">
+      <div class="prog-head">
+        <span class="prog-name">Покрытие БГ (без «не требуется»)</span>
+        <span class="prog-val">${(w.bgInstalled/bgActive*100).toFixed(0)}%</span>
+      </div>
+      <div class="prog-track">${bgData.filter(b=>b.label!=='Не требуется').map(b=>
+        `<div class="prog-seg" style="width:${(b.val/(w.total-w.excluded)*100).toFixed(1)}%;background:${b.color}"></div>`
+      ).join('')}</div>
+      <div class="prog-legend">${bgData.map(b=>
+        `<div class="prog-legend-item"><div class="prog-legend-dot" style="background:${b.color}"></div>${b.label} (${b.val})</div>`
+      ).join('')}</div>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      ${bgData.map(b=>
+        `<div style="flex:1;min-width:100px;padding:10px 14px;border-radius:10px;background:${b.bg};text-align:center">
+          <div style="font-family:'Unbounded',sans-serif;font-size:20px;font-weight:800;color:${b.color}">${b.val}</div>
+          <div style="font-size:9px;color:${b.color};opacity:.7;text-transform:uppercase;font-weight:700;letter-spacing:.5px">${b.label}</div>
+        </div>`
+      ).join('')}
+    </div>`;
+}
+
+renderAll();
+</script>
+</body>
+</html>

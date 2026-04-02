@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>КапРем — Фасады ЗАО 2026</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Unbounded:wght@300;400;500;600;700;800&display=swap');
+
+:root {
+  --bg-primary: #0a0a0f;
+  --bg-secondary: #12121a;
+  --bg-card: #16161f;
+  --bg-card-hover: #1c1c28;
+  --bg-elevated: #1e1e2a;
+  --border: #2a2a3a;
+  --border-light: #333348;
+  --text-primary: #e8e8f0;
+  --text-secondary: #8888a0;
+  --text-muted: #555570;
+  --accent-orange: #ff6b2c;
+  --accent-orange-dim: rgba(255,107,44,0.15);
+  --accent-cyan: #00d4aa;
+  --accent-cyan-dim: rgba(0,212,170,0.12);
+  --accent-green: #4ade80;
+  --accent-green-dim: rgba(74,222,128,0.12);
+  --accent-yellow: #fbbf24;
+  --accent-yellow-dim: rgba(251,191,36,0.12);
+  --accent-red: #f87171;
+  --accent-red-dim: rgba(248,113,113,0.12);
+  --accent-purple: #a78bfa;
+  --accent-purple-dim: rgba(167,139,250,0.12);
+  --accent-blue: #60a5fa;
+  --accent-blue-dim: rgba(96,165,250,0.12);
+  --radius: 12px;
+  --radius-sm: 8px;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  font-family: 'JetBrains Mono', monospace;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* HEADER */
+.header {
+  padding: 24px 32px 20px;
+  border-bottom: 1px solid var(--border);
+  background: linear-gradient(180deg, var(--bg-secondary) 0%, var(--bg-primary) 100%);
+  position: sticky; top: 0; z-index: 100;
+}
+.header-top {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 12px;
+}
+.logo {
+  font-family: 'Unbounded', sans-serif;
+  font-size: 13px; font-weight: 700;
+  color: var(--accent-orange);
+  letter-spacing: 2px; text-transform: uppercase;
+}
+.logo span { color: var(--text-muted); font-weight: 400; }
+.header-title {
+  font-family: 'Unbounded', sans-serif;
+  font-size: 22px; font-weight: 600;
+  color: var(--text-primary);
+}
+.header-subtitle {
+  font-size: 12px; color: var(--text-secondary);
+  margin-top: 4px;
+}
+.date-badge {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 6px 14px;
+  font-size: 11px; color: var(--text-secondary);
+}
+
+/* TABS */
+.tabs {
+  display: flex; gap: 4px; margin-top: 16px;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: -1px;
+}
+.tab {
+  padding: 8px 16px;
+  font-size: 11px; font-weight: 500;
+  color: var(--text-muted);
+  cursor: pointer; border: none; background: none;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s;
+  font-family: inherit;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.tab:hover { color: var(--text-secondary); }
+.tab.active {
+  color: var(--accent-orange);
+  border-bottom-color: var(--accent-orange);
+}
+
+/* MAIN */
+.main { padding: 24px 32px; max-width: 1600px; margin: 0 auto; }
+
+/* VIEW PANELS */
+.view-panel { display: none; }
+.view-panel.active { display: block; }
+
+/* KPI CARDS */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px; margin-bottom: 24px;
+}
+.kpi-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px 18px;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.25s;
+}
+.kpi-card:hover {
+  border-color: var(--border-light);
+  transform: translateY(-1px);
+}
+.kpi-card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0;
+  height: 2px;
+}
+.kpi-card.orange::before { background: var(--accent-orange); }
+.kpi-card.cyan::before { background: var(--accent-cyan); }
+.kpi-card.green::before { background: var(--accent-green); }
+.kpi-card.yellow::before { background: var(--accent-yellow); }
+.kpi-card.purple::before { background: var(--accent-purple); }
+.kpi-card.red::before { background: var(--accent-red); }
+.kpi-label {
+  font-size: 10px; color: var(--text-muted);
+  text-transform: uppercase; letter-spacing: 1px;
+  margin-bottom: 8px;
+}
+.kpi-value {
+  font-family: 'Unbounded', sans-serif;
+  font-size: 26px; font-weight: 700;
+}
+.kpi-card.orange .kpi-value { color: var(--accent-orange); }
+.kpi-card.cyan .kpi-value { color: var(--accent-cyan); }
+.kpi-card.green .kpi-value { color: var(--accent-green); }
+.kpi-card.yellow .kpi-value { color: var(--accent-yellow); }
+.kpi-card.purple .kpi-value { color: var(--accent-purple); }
+.kpi-card.red .kpi-value { color: var(--accent-red); }
+.kpi-sub {
+  font-size: 11px; color: var(--text-secondary);
+  margin-top: 4px;
+}
+
+/* SECTION */
+.section {
+  margin-bottom: 28px;
+}
+.section-title {
+  font-family: 'Unbounded', sans-serif;
+  font-size: 14px; font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 14px;
+  display: flex; align-items: center; gap: 8px;
+}
+.section-title .dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--accent-orange);
+}
+
+/* CHART CONTAINERS */
+.chart-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px; margin-bottom: 24px;
+}
+@media (max-width: 1000px) { .chart-row { grid-template-columns: 1fr; } }
+
+.chart-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+}
+.chart-card-title {
+  font-size: 12px; font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase; letter-spacing: 0.5px;
+  margin-bottom: 16px;
+}
+
+/* HORIZONTAL BAR CHART */
+.hbar { margin-bottom: 10px; }
+.hbar-label {
+  display: flex; justify-content: space-between;
+  font-size: 11px; margin-bottom: 4px;
+}
+.hbar-name { color: var(--text-primary); }
+.hbar-val { color: var(--text-secondary); font-weight: 600; }
+.hbar-track {
+  height: 22px; background: var(--bg-primary);
+  border-radius: 4px; overflow: hidden;
+  position: relative;
+}
+.hbar-fill {
+  height: 100%; border-radius: 4px;
+  transition: width 0.8s cubic-bezier(0.22,1,0.36,1);
+  position: relative;
+}
+.hbar-fill::after {
+  content: '';
+  position: absolute; right: 0; top: 0; bottom: 0; width: 2px;
+  background: rgba(255,255,255,0.3);
+}
+
+/* DONUT / PIE */
+.donut-container {
+  display: flex; align-items: center; gap: 24px;
+}
+.donut-svg { flex-shrink: 0; }
+.donut-legend { flex: 1; }
+.legend-item {
+  display: flex; align-items: center; gap: 8px;
+  padding: 4px 0; font-size: 11px;
+}
+.legend-dot {
+  width: 8px; height: 8px; border-radius: 2px;
+  flex-shrink: 0;
+}
+.legend-name { color: var(--text-primary); flex: 1; }
+.legend-val { color: var(--text-secondary); font-weight: 600; }
+
+/* STATUS PIPELINE */
+.pipeline {
+  display: flex; gap: 8px; margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+.pipe-stage {
+  flex: 1; min-width: 140px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  text-align: center;
+  position: relative;
+  cursor: pointer;
+  transition: all 0.25s;
+}
+.pipe-stage:hover { border-color: var(--border-light); transform: translateY(-2px); }
+.pipe-stage.active { border-color: var(--accent-orange); }
+.pipe-count {
+  font-family: 'Unbounded', sans-serif;
+  font-size: 28px; font-weight: 700;
+  margin-bottom: 4px;
+}
+.pipe-name {
+  font-size: 10px; color: var(--text-muted);
+  text-transform: uppercase; letter-spacing: 0.5px;
+}
+.pipe-stage:not(:last-child)::after {
+  content: '→'; position: absolute; right: -14px; top: 50%;
+  transform: translateY(-50%); color: var(--text-muted); font-size: 14px;
+}
+
+/* TIMELINE GANTT */
+.gantt-container {
+  overflow-x: auto; margin-bottom: 24px;
+}
+.gantt-header {
+  display: flex; margin-bottom: 4px;
+  position: sticky; top: 0;
+}
+.gantt-label-col { width: 220px; flex-shrink: 0; }
+.gantt-months {
+  display: flex; flex: 1;
+}
+.gantt-month {
+  flex: 1; text-align: center;
+  font-size: 10px; color: var(--text-muted);
+  text-transform: uppercase; letter-spacing: 1px;
+  padding: 4px; border-left: 1px solid var(--border);
+}
+.gantt-month.current { color: var(--accent-orange); font-weight: 600; }
+.gantt-row {
+  display: flex; align-items: center;
+  border-bottom: 1px solid rgba(42,42,58,0.5);
+  height: 28px;
+}
+.gantt-row:hover { background: var(--bg-card-hover); }
+.gantt-row-label {
+  width: 220px; flex-shrink: 0;
+  font-size: 10px; color: var(--text-primary);
+  padding-right: 12px; white-space: nowrap;
+  overflow: hidden; text-overflow: ellipsis;
+}
+.gantt-bar-area {
+  flex: 1; display: flex; position: relative;
+  height: 100%;
+}
+.gantt-bar {
+  position: absolute; height: 16px; top: 6px;
+  border-radius: 3px;
+  transition: all 0.3s;
+  cursor: pointer;
+}
+.gantt-bar:hover {
+  height: 20px; top: 4px;
+  filter: brightness(1.2);
+  z-index: 10;
+}
+.gantt-bar .tooltip {
+  display: none; position: absolute; bottom: 100%;
+  left: 50%; transform: translateX(-50%);
+  background: var(--bg-elevated); border: 1px solid var(--border);
+  border-radius: 6px; padding: 8px 10px;
+  font-size: 10px; white-space: nowrap;
+  z-index: 100; pointer-events: none;
+}
+.gantt-bar:hover .tooltip { display: block; }
+
+/* CONTRACTOR TABLE */
+.contractor-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 10px;
+}
+.contractor-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 14px 16px;
+  transition: all 0.2s;
+  cursor: pointer;
+}
+.contractor-card:hover { border-color: var(--border-light); }
+.contractor-name {
+  font-size: 11px; font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.contractor-stats {
+  display: flex; gap: 12px;
+}
+.contractor-stat {
+  display: flex; flex-direction: column;
+}
+.contractor-stat-val {
+  font-family: 'Unbounded', sans-serif;
+  font-size: 16px; font-weight: 700;
+  color: var(--accent-cyan);
+}
+.contractor-stat-label {
+  font-size: 9px; color: var(--text-muted);
+  text-transform: uppercase; letter-spacing: 0.5px;
+}
+.contractor-bar {
+  margin-top: 8px; height: 4px;
+  background: var(--bg-primary); border-radius: 2px;
+  overflow: hidden;
+}
+.contractor-bar-fill {
+  height: 100%; border-radius: 2px;
+  background: linear-gradient(90deg, var(--accent-cyan), var(--accent-green));
+}
+
+/* OBJECT TABLE */
+.table-container {
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+table {
+  width: 100%; border-collapse: collapse;
+  font-size: 11px;
+}
+thead th {
+  background: var(--bg-card);
+  padding: 10px 12px;
+  text-align: left;
+  font-size: 10px; font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase; letter-spacing: 0.5px;
+  border-bottom: 1px solid var(--border);
+  position: sticky; top: 0; z-index: 10;
+  cursor: pointer;
+  white-space: nowrap;
+}
+thead th:hover { color: var(--text-secondary); }
+tbody tr {
+  border-bottom: 1px solid rgba(42,42,58,0.3);
+  transition: background 0.15s;
+}
+tbody tr:hover { background: var(--bg-card-hover); }
+td {
+  padding: 8px 12px;
+  color: var(--text-primary);
+  white-space: nowrap;
+}
+.status-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 10px; font-weight: 500;
+}
+.status-badge.work { background: var(--accent-cyan-dim); color: var(--accent-cyan); }
+.status-badge.notstarted { background: var(--accent-yellow-dim); color: var(--accent-yellow); }
+.status-badge.exclude { background: var(--accent-red-dim); color: var(--accent-red); }
+.status-badge.paid { background: var(--accent-green-dim); color: var(--accent-green); }
+.status-badge.done { background: var(--accent-purple-dim); color: var(--accent-purple); }
+
+.bg-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 10px; font-weight: 500;
+}
+.bg-badge.installed { background: var(--accent-green-dim); color: var(--accent-green); }
+.bg-badge.notinstalled { background: var(--accent-red-dim); color: var(--accent-red); }
+.bg-badge.process { background: var(--accent-yellow-dim); color: var(--accent-yellow); }
+.bg-badge.cluster { background: var(--accent-blue-dim); color: var(--accent-blue); }
+.bg-badge.notrequired { background: rgba(85,85,112,0.2); color: var(--text-muted); }
+
+/* FILTER BAR */
+.filter-bar {
+  display: flex; gap: 8px; margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+.filter-btn {
+  padding: 6px 12px; border-radius: 16px;
+  background: var(--bg-card); border: 1px solid var(--border);
+  color: var(--text-secondary); font-size: 10px;
+  font-family: inherit; cursor: pointer;
+  transition: all 0.2s;
+}
+.filter-btn:hover { border-color: var(--border-light); }
+.filter-btn.active {
+  background: var(--accent-orange-dim);
+  border-color: var(--accent-orange);
+  color: var(--accent-orange);
+}
+
+/* HEATMAP */
+.heatmap-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(54px, 1fr));
+  gap: 4px;
+}
+.heat-cell {
+  aspect-ratio: 1;
+  border-radius: 6px;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  font-size: 9px;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: 1px solid transparent;
+}
+.heat-cell:hover {
+  transform: scale(1.1);
+  border-color: var(--accent-orange);
+  z-index: 10;
+}
+.heat-cell .heat-num {
+  font-family: 'Unbounded', sans-serif;
+  font-size: 11px; font-weight: 700;
+}
+.heat-cell .heat-label {
+  font-size: 7px; color: rgba(255,255,255,0.6);
+  text-align: center; line-height: 1.1;
+  max-width: 100%; overflow: hidden;
+}
+
+/* ANIMATIONS */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animated { animation: fadeIn 0.4s ease-out forwards; }
+.animated:nth-child(2) { animation-delay: 0.05s; }
+.animated:nth-child(3) { animation-delay: 0.1s; }
+.animated:nth-child(4) { animation-delay: 0.15s; }
+.animated:nth-child(5) { animation-delay: 0.2s; }
+.animated:nth-child(6) { animation-delay: 0.25s; }
+
+/* SCROLLBAR */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--bg-primary); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--border-light); }
+
+/* Three-column layout */
+.tri-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 16px;
+}
+@media (max-width: 1200px) { .tri-grid { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 800px) { .tri-grid { grid-template-columns: 1fr; } }
+
+.full-width { grid-column: 1 / -1; }
+</style>
+</head>
+<body>
+<a href="index.html" style="position:fixed;top:12px;right:12px;z-index:9999;padding:6px 14px;background:rgba(10,10,15,0.85);border:1px solid #2a2a3a;border-radius:20px;color:#888;font-size:11px;font-family:JetBrains Mono,monospace;text-decoration:none;backdrop-filter:blur(8px);transition:all .2s" onmouseover="this.style.color='#f97316';this.style.borderColor='#f97316'" onmouseout="this.style.color='#888';this.style.borderColor='#2a2a3a'">← Главная</a>
+
+<div class="header">
+  <div class="header-top">
+    <div>
+      <div class="logo">КапРем <span>/ Фасады</span></div>
+      <div class="header-title">Западный административный округ</div>
+      <div class="header-subtitle">Программа капитального ремонта фасадов 2026 — сводная аналитика</div>
+    </div>
+    <div class="date-badge">Данные на апрель 2026</div>
+  </div>
+  <div class="tabs">
+    <button class="tab active" data-view="overview">Обзор</button>
+    <button class="tab" data-view="timeline">Динамика</button>
+    <button class="tab" data-view="contractors">Подрядчики</button>
+    <button class="tab" data-view="objects">Объекты</button>
+    <button class="tab" data-view="heatmap">Тепловая карта</button>
+  </div>
+</div>
+
+<div class="main">
+  <!-- ===== OVERVIEW ===== -->
+  <div class="view-panel active" id="view-overview">
+    <div class="kpi-grid" id="kpi-grid"></div>
+
+    <div class="section">
+      <div class="section-title"><span class="dot"></span>Воронка статусов</div>
+      <div class="pipeline" id="pipeline"></div>
+    </div>
+
+    <div class="chart-row">
+      <div class="chart-card">
+        <div class="chart-card-title">Программы работ</div>
+        <div id="program-chart"></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-card-title">Статус БГ (банковская гарантия)</div>
+        <div id="bg-chart"></div>
+      </div>
+    </div>
+
+    <div class="chart-row">
+      <div class="chart-card">
+        <div class="chart-card-title">Типы фасадов</div>
+        <div id="facade-chart"></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-card-title">Серии домов (топ-10)</div>
+        <div id="series-chart"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== TIMELINE ===== -->
+  <div class="view-panel" id="view-timeline">
+    <div class="section">
+      <div class="section-title"><span class="dot"></span>Сроки начала работ</div>
+      <div id="timeline-bars"></div>
+    </div>
+    <div class="section" style="margin-top:24px;">
+      <div class="section-title"><span class="dot"></span>Диаграмма Ганта — график работ</div>
+      <div class="gantt-container" id="gantt"></div>
+    </div>
+  </div>
+
+  <!-- ===== CONTRACTORS ===== -->
+  <div class="view-panel" id="view-contractors">
+    <div class="section">
+      <div class="section-title"><span class="dot"></span>Подрядчики ЗАО — загрузка и объёмы</div>
+      <div class="contractor-grid" id="contractor-grid"></div>
+    </div>
+  </div>
+
+  <!-- ===== OBJECTS ===== -->
+  <div class="view-panel" id="view-objects">
+    <div class="section">
+      <div class="section-title"><span class="dot"></span>Все объекты ЗАО</div>
+      <div class="filter-bar" id="filter-bar"></div>
+      <div class="table-container">
+        <table id="objects-table">
+          <thead><tr></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== HEATMAP ===== -->
+  <div class="view-panel" id="view-heatmap">
+    <div class="section">
+      <div class="section-title"><span class="dot"></span>Тепловая карта объектов — этажность × стоимость</div>
+      <div class="chart-card" style="margin-bottom:24px;">
+        <div class="chart-card-title">63 объекта • размер = квартиры • цвет = статус</div>
+        <div class="heatmap-grid" id="heatmap-grid"></div>
+      </div>
+    </div>
+    <div class="section">
+      <div class="section-title"><span class="dot"></span>Распределение по этажности</div>
+      <div class="chart-card">
+        <div id="floors-chart"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// DATA
+const DATA = [{"address":"Новоорловская ул. 12","status":"5. Срок начала работ не наступил","program":"Фасады Модернизация","started":"2. Не приступили","cost":0.0,"bg":"3. Не установлен БГ","dateStart":"2026-05-01","dateEnd":"2026-09-20","contractor":"ООО \"ДОМ-СТРОЙ\"","roofType":"плоская","facadeType":"облицовка керамическими плитками","entrances":4,"floors":14,"apartments":222,"series":"П-46","timeline":"2. Май.","contractType":"Договор КР (ПСД разработан)","contractNum":"КРД-001144-26"},{"address":"Можайское шоссе 21","status":"5. Срок начала работ не наступил","program":"Фасады Модернизация","started":"2. Не приступили","cost":0.0,"bg":"3. Не установлен БГ","dateStart":"2026-05-01","dateEnd":"2026-09-20","contractor":"ООО \"БИРС-С\"","roofType":"плоская","facadeType":"облицовка керамическими плитками","entrances":2,"floors":14,"apartments":104,"series":"П-55","timeline":"2. Май.","contractType":"Договор КР (ПСД разработан)","contractNum":"КРД-001145-26"},{"address":"Никулинская ул. 9","status":"5. Срок начала работ не наступил","program":"Фасады Модернизация","started":"2. Не приступили","cost":0.0,"bg":"3. Не установлен БГ","dateStart":"2026-05-01","dateEnd":"2026-09-20","contractor":"ООО \"СТРОЙАЛЬЯНС\"","roofType":"плоская","facadeType":"облицовка керамическими плитками","entrances":3,"floors":22,"apartments":257,"series":"КОПЭ","timeline":"2. Май.","contractType":"Договор КР (ПСД разработан)","contractNum":"КРД-001146-26"},{"address":"Барвихинская ул. 4 к.1","status":"4. Начало работ","program":"Фасады Модернизация","started":"2. Не приступили","cost":0.0,"bg":"3. Не установлен БГ","dateStart":"2026-04-21","dateEnd":"2026-09-10","contractor":"ООО \"БИРС-С\"","roofType":"плоская","facadeType":"фактурный","entrances":2,"floors":23,"apartments":264,"series":"повторное применение","timeline":"21. Апреля","contractType":"Договор КР (ПСД разработан)","contractNum":"КРД-001133-26"},{"address":"Барвихинская ул. 4 к.2","status":"4. Начало работ","program":"Фасады Модернизация","started":"2. Не приступили","cost":0.0,"bg":"3. Не установлен БГ","dateStart":"2026-04-21","dateEnd":"2026-09-10","contractor":"ООО \"БИРС-С\"","roofType":"плоская","facadeType":"фактурный","entrances":4,"floors":23,"apartments":265,"series":"повторное применение","timeline":"21. Апреля","contractType":"Договор КР (ПСД разработан)","contractNum":"КРД-001134-26"},{"address":"Никулинская ул. 15 к.2","status":"5. Срок начала работ не наступил","program":"Фасады Модернизация","started":"2. Не приступили","cost":150290794.12,"bg":"2. В процессе установки","dateStart":"2026-06-21","dateEnd":"2026-10-10","contractor":"ООО \"СТРОЙАЛЬЯНС\"","roofType":"плоская","facadeType":"окраска по штукатурке","entrances":4,"floors":17,"apartments":269,"series":"П-3/16","timeline":"3. Июнь-июль","contractType":"Договор ПКР","contractNum":"ПКРД-002123-25"},{"address":"Никулинская ул. 19","status":"5. Срок начала работ не наступил","program":"Фасады Модернизация","started":"2. Не приступили","cost":130122260.78,"bg":"2. В процессе установки","dateStart":"2026-06-01","dateEnd":"2026-10-10","contractor":"ООО \"ДОМ-СТРОЙ\"","roofType":"плоская","facadeType":"облицовка керамическими плитками","entrances":6,"floors":22,"apartments":252,"series":"КОПЭ","timeline":"3. Июнь-июль","contractType":"Договор ПКР","contractNum":"ПКРД-002124-25"},{"address":"Рублевское шоссе 83 к.4","status":"4. Начало работ","program":"Фасады Модернизация","started":"2. Не приступили","cost":79705561.76,"bg":"2. Куст ","dateStart":"2026-04-11","dateEnd":"2026-08-31","contractor":"ООО \"ДОМ-СТРОЙ\"","roofType":"плоская","facadeType":"облицовка керамическими блоками","entrances":3,"floors":16,"apartments":174,"series":"II-68","timeline":"11. Апреля","contractType":"Договор КР (ПСД разработан)","contractNum":"КРД-001139-26"},{"address":"Рублевское шоссе 83 к.5","status":"4. Начало работ","program":"Фасады Модернизация","started":"2. Не приступили","cost":65278943.14,"bg":"2. Куст ","dateStart":"2026-04-11","dateEnd":"2026-08-31","contractor":"ООО \"ДОМ-СТРОЙ\"","roofType":"плоская","facadeType":"облицовка керамическими блоками","entrances":3,"floors":16,"apartments":174,"series":"II-68","timeline":"11. Апреля","contractType":"Договор КР (ПСД разработан)","contractNum":"КРД-001140-26"},{"address":"Дорогомиловская Б. ул. 14 к.2","status":"4. Начало работ","program":"Фасады Модернизация","started":"2. Не приступили","cost":74575376.47,"bg":"2. Куст ","dateStart":"2026-04-11","dateEnd":"2026-08-31","contractor":"ООО \"ДОМ-СТРОЙ\"","roofType":"плоская","facadeType":"облицовка керамическими плитками","entrances":2,"floors":22,"apartments":168,"series":"КОПЭ","timeline":"11. Апреля","contractType":"Договор КР (ПСД разработан)","contractNum":"КРД-001138-26"},{"address":"Рублевское шоссе 91 к.4","status":"4. Начало работ","program":"Фасады Модернизация","started":"2. Не приступили","cost":141597748.43,"bg":"2. В процессе установки","dateStart":"2026-04-11","dateEnd":"2026-08-31","contractor":"ООО \"РЭО \"СЕРВИС ПЛЮС\"","roofType":"плоская","facadeType":"облицовка керамическими плитками","entrances":7,"floors":22,"apartments":407,"series":"КОПЭ","timeline":"11. Апреля","contractType":"Договор КР (ПСД разработан)","contractNum":"КРД-001141-26"},{"address":"Новопеределкинская ул. 4","status":"4. Начало работ","program":"Фасады Модернизация","started":"2. Не приступили","cost":102923473.53,"bg":"2. Куст ","dateStart":"2026-04-11","dateEnd":"2026-08-20","contractor":"ООО \"ПЕРСПЕКТИВ\"","roofType":"плоская","facadeType":"облицовка керамическими плитками","entrances":6,"floors":16,"apartments":318,"series":"II-68","timeline":"11. Апреля","contractType":"Договор КР (ПСД разработан)","contractNum":"КРД-001142-26"},{"address":"Новопеределкинская ул. 6","status":"4. Начало работ","program":"Фасады Модернизация","started":"2. Не приступили","cost":102923473.53,"bg":"2. Куст ","dateStart":"2026-04-11","dateEnd":"2026-08-20","contractor":"ООО \"ПЕРСПЕКТИВ\"","roofType":"плоская","facadeType":"облицовка керамическими плитками","entrances":6,"floors":16,"apartments":318,"series":"II-68","timeline":"11. Апреля","contractType":"Договор КР (ПСД разработан)","contractNum":"КРД-001143-26"},{"address":"Новопеределкинская ул. 8","status":"4. Начало работ","program":"Фасады Модернизация","started":"2. Не приступили","cost":102923473.53,"bg":"2. Куст ","dateStart":"2026-04-11","dateEnd":"2026-08-20","contractor":"ООО \"ПЕРСПЕКТИВ\"","roofType":"плоская","facadeType":"облицовка керамическими плитками","entrances":6,"floors":16,"apartments":210,"series":"II-68","timeline":"11. Апреля","contractType":"Договор КР (ПСД разработан)","contractNum":"КРД-001150-26"},{"address":"Гришина ул. 12 к.2","status":"4. Начало работ","program":"Фасады Модернизация","started":"2. Не приступили","cost":102923473.53,"bg":"2. Куст ","dateStart":"2026-04-11","dateEnd":"2026-08-20","contractor":"ООО \"ПЕРСПЕКТИВ\"","roofType":"плоская","facadeType":"облицовка керамическими плитками","entrances":6,"floors":16,"apartments":386,"series":"II-68","timeline":"11. Апреля","contractType":"Договор КР (ПСД разработан)","contractNum":"КРД-001149-26"},{"address":"Рублевское шоссе 14 к.1","status":"4. Начало работ","program":"Фасады Модернизация","started":"2. Не приступили","cost":141597748.43,"bg":"2. В процессе установки","dateStart":"2026-04-11","dateEnd":"2026-08-31","contractor":"ООО \"РЭО \"СЕРВИС ПЛЮС\"","roofType":"плоская","facadeType":"облицовка керамическими плитками","entrances":7,"floors":22,"apartments":407,"series":"КОПЭ","timeline":"11. Апреля","contractType":"Договор КР (ПСД разработан)","contractNum":"КРД-001137-26"},{"address":"Рублевское шоссе 16 к.1","status":"4. Начало работ","program":"Фасады Модернизация","started":"2. Не приступили","cost":216714412.75,"bg":"2. В процессе установки","dateStart":"2026-04-11","dateEnd":"2026-08-31","contractor":"ООО \"РЭО \"СЕРВИС ПЛЮС\"","roofType":"плоская","facadeType":"облицовка керамическими плитками","entrances":10,"floors":22,"apartments":570,"series":"КОПЭ","timeline":"11. Апреля","contractType":"Договор КР (ПСД разработан)","contractNum":"КРД-001151-26"},{"address":"Рублевское шоссе 22 к.1","status":"6. Планируется исключение","program":"Фасады Модернизация","started":"2. Не приступили","cost":74575376.47,"bg":"3. Не установлен БГ","dateStart":"2026-04-11","dateEnd":"2026-08-31","contractor":"ООО \"ДОМ-СТРОЙ\"","roofType":"плоская","facadeType":"облицовка керамическими плитками","entrances":2,"floors":22,"apartments":168,"series":"КОПЭ","timeline":"11. Апреля","contractType":"Договор КР (ПСД разработан)","contractNum":"КРД-001152-26"},{"address":"Рублевское шоссе 24 к.1","status":"6. Планируется исключение","program":"Фасады Модернизация","started":"2. Не приступили","cost":216714412.75,"bg":"3. Не установлен БГ","dateStart":"2026-04-11","dateEnd":"2026-08-31","contractor":"ООО \"СК \"ЗЕНИТ\"","roofType":"плоская","facadeType":"облицовка керамическими плитками","entrances":10,"floors":22,"apartments":458,"series":"КОПЭ","timeline":"11. Апреля","contractType":"Договор КР (ПСД разработан)","contractNum":"КРД-001153-26"},{"address":"Рублевское шоссе 99 к.4","status":"4. Начало работ","program":"Фасады Модернизация","started":"2. Не приступили","cost":70738164.71,"bg":"2. Куст ","dateStart":"2026-04-11","dateEnd":"2026-08-31","contractor":"ООО \"МАКСИ-БИЗНЕС\"","roofType":"плоская","facadeType":"облицовка керамическими блоками","entrances":3,"floors":16,"apartments":143,"series":"П-3/17","timeline":"11. Апреля","contractType":"Договор КР (ПСД разработан)","contractNum":"КРД-001154-26"},{"address":"Рублевское шоссе 99 к.5","status":"4. Начало работ","program":"Фасады Модернизация","started":"2. Не приступили","cost":70738164.71,"bg":"2. Куст ","dateStart":"2026-04-11","dateEnd":"2026-08-31","contractor":"ООО \"МАКСИ-БИЗНЕС\"","roofType":"плоская","facadeType":"облицовка керамическими блоками","entrances":3,"floors":16,"apartments":99,"series":"П-3/17","timeline":"11. Апреля","contractType":"Договор КР (ПСД разработан)","contractNum":"КРД-001155-26"},{"address":"Тимошенко Маршала ул. 46","status":"4. Начало работ","program":"Фасады Модернизация","started":"2. Не приступили","cost":70738164.71,"bg":"3. Не установлен БГ","dateStart":"2026-05-01","dateEnd":"2026-09-20","contractor":"ООО \"ММ-СТРОЙ\"","roofType":"плоская","facadeType":"облицовка керамическими блоками","entrances":3,"floors":16,"apartments":99,"series":"П-3/17","timeline":"2. Май.","contractType":"Договор КР (ПСД разработан)","contractNum":"КРД-001156-26"},{"address":"Можайское шоссе 15","status":"4. Начало работ","program":"Фасады Модернизация","started":"2. Не приступили","cost":40772692.16,"bg":"3. Не установлен БГ","dateStart":"2026-05-01","dateEnd":"2026-09-20","contractor":"ООО \"ММ-СТРОЙ\"","roofType":"плоская","facadeType":"облицовка керамическими блоками","entrances":2,"floors":14,"apartments":111,"series":"П-55","timeline":"2. Май.","contractType":"Договор КР (ПСД разработан)","contractNum":"КРД-001157-26"},{"address":"Приречная ул. 5","status":"4. Начало работ","program":"Фасады Модернизация","started":"2. Не приступили","cost":40772692.16,"bg":"3. Не установлен БГ","dateStart":"2026-05-01","dateEnd":"2026-09-20","contractor":"ООО \"ММ-СТРОЙ\"","roofType":"плоская","facadeType":"окраска по штукатурке","entrances":2,"floors":14,"apartments":111,"series":"П-55","timeline":"2. Май.","contractType":"Договор КР (ПСД разработан)","contractNum":"КРД-001158-26"},{"address":"Никулинская ул. 11","status":"1. Оплачен","program":"Фасады КБУ","started":"1. Приступили к работам","cost":7535763.53,"bg":"1. БГ установлен","dateStart":"2025-04-11","dateEnd":"2025-07-31","contractor":"ГБУ \"МОСРЕМОНТ\"","roofType":"плоская","facadeType":"окраска по штукатурке","entrances":3,"floors":9,"apartments":106,"series":"П-30","timeline":"до 2026","contractType":"Договор КР (ПСД разработан)","contractNum":"КРД-001042-25"},{"address":"Студенческая ул. 19 к.1","status":"4. Начало работ","program":"Прочие","started":"2. Не приступили","cost":39963905.88,"bg":"1. БГ установлен","dateStart":"2026-04-01","dateEnd":"2026-08-20","contractor":"АНО ПО РАЗВИТИЮ ГОРОДСКОЙ СРЕДЫ \"МВС СТ\"","roofType":"скатная","facadeType":"под расшивку","entrances":1,"floors":5,"apartments":24,"series":"индивидуальный проект","timeline":"01. Апреля","contractType":"Договор КР (ПСД разработан)","contractNum":"КРД-001076-26"},{"address":"Крылатские Холмы ул. 30 к.3","status":"4. Начало работ","program":"Прочие","started":"2. Не приступили","cost":27046974.12,"bg":"1. БГ установлен","dateStart":"2026-04-01","dateEnd":"2026-06-30","contractor":"АНО \"МЛСТ\"","roofType":"плоская","facadeType":"окраска по штукатурке","entrances":1,"floors":12,"apartments":60,"series":"индивидуальный проект","timeline":"01. Апреля","contractType":"Договор КР (ПСД разработан)","contractNum":"КРД-001080-26"},{"address":"Крылатские Холмы ул. 30 к.5","status":"4. Начало работ","program":"Прочие","started":"2. Не приступили","cost":27046974.12,"bg":"1. БГ установлен","dateStart":"2026-04-01","dateEnd":"2026-06-30","contractor":"АНО \"МЛСТ\"","roofType":"плоская","facadeType":"окраска по штукатурке","entrances":1,"floors":12,"apartments":60,"series":"индивидуальный проект","timeline":"01. Апреля","contractType":"Договор КР (ПСД разработан)","contractNum":"КРД-001081-26"},{"address":"26 Бакинских Комиссаров ул. 12 к.6","status":"4. Начало работ","program":"Прочие","started":"2. Не приступили","cost":27046974.12,"bg":"1. БГ установлен","dateStart":"2026-04-01","dateEnd":"2026-06-30","contractor":"АНО \"МЛСТ\"","roofType":"плоская","facadeType":"окраска по штукатурке","entrances":1,"floors":12,"apartments":60,"series":"индивидуальный проект","timeline":"01. Апреля","contractType":"Договор КР (ПСД разработан)","contractNum":"КРД-001082-26"},{"address":"Анохина Академика ул. 44","status":"4. Начало работ","program":"Прочие","started":"2. Не приступили","cost":27046974.12,"bg":"1. БГ установлен","dateStart":"2026-04-01","dateEnd":"2026-06-30","contractor":"АНО \"МЛСТ\"","roofType":"плоская","facadeType":"окраска по штукатурке","entrances":1,"floors":16,"apartments":63,"series":"индивидуальный проект","timeline":"01. Апреля","contractType":"Договор КР (ПСД разработан)","contractNum":"КРД-001083-26"},{"address":"Анохина Академика ул. 46 к.1","status":"4. Начало работ","program":"Прочие","started":"2. Не приступили","cost":18036104.8,"bg":"1. БГ установлен","dateStart":"2026-04-01","dateEnd":"2026-06-30","contractor":"АНО \"МЛСТ\"","roofType":"плоская","facadeType":"окраска по штукатурке","entrances":1,"floors":16,"apartments":98,"series":"индивидуальный проект","timeline":"01. Апреля","contractType":"Договор КР (ПСД разработан)","contractNum":"КРД-001084-26"},{"address":"Анохина Академика ул. 46 к.2","status":"4. Начало работ","program":"Прочие","started":"2. Не приступили","cost":17828613.93,"bg":"1. БГ установлен","dateStart":"2026-04-01","dateEnd":"2026-07-10","contractor":"ГБУ \"ОЗЕЛЕНЕНИЕ\"","roofType":"скатная","facadeType":"под расшивку","entrances":4,"floors":5,"apartments":60,"series":"индивидуальный проект","timeline":"01. Апреля","contractType":"Договор КР (ПСД разработан)","contractNum":"КРД-001085-26"},{"address":"Удальцова ул. 3 к.5","status":"4. Начало работ","program":"Прочие","started":"2. Не приступили","cost":129522776.47,"bg":"3. НЕ требуется","dateStart":"2026-04-01","dateEnd":"2026-08-20","contractor":"АНО ПО РАЗВИТИЮ ГОРОДСКОЙ СРЕДЫ \"МВС СТ\"","roofType":"плоская","facadeType":"облицовка керамическими плитками","entrances":4,"floors":14,"apartments":249,"series":"П-43","timeline":"01. Апреля","contractType":"Договор КР (ПСД разработан)","contractNum":"КРД-001086-26"},{"address":"Минская ул. 14 к.1","status":"4. Начало работ","program":"Прочие","started":"2. Не приступили","cost":52878633.38,"bg":"1. БГ установлен","dateStart":"2026-04-01","dateEnd":"2026-08-20","contractor":"АНО ПО РАЗВИТИЮ ГОРОДСКОЙ СРЕДЫ \"МВС СТ\"","roofType":"скатная","facadeType":"под расшивку","entrances":9,"floors":8,"apartments":127,"series":"индивидуальный проект","timeline":"01. Апреля","contractType":"Договор КР (ПСД разработан)","contractNum":"КРД-001087-26"},{"address":"Гришина ул. 10 к.3","status":"4. Начало работ","program":"Прочие","started":"2. Не приступили","cost":15353519.18,"bg":"1. БГ установлен","dateStart":"2026-04-01","dateEnd":"2026-07-10","contractor":"ГБУ \"ОЗЕЛЕНЕНИЕ\"","roofType":"скатная","facadeType":"под расшивку","entrances":4,"floors":5,"apartments":60,"series":"индивидуальный проект","timeline":"01. Апреля","contractType":"Договор КР (ПСД разработан)","contractNum":"КРД-001088-26"},{"address":"Гришина ул. 20","status":"4. Начало работ","program":"Прочие","started":"2. Не приступили","cost":31881788.24,"bg":"3. НЕ требуется","dateStart":"2026-04-01","dateEnd":"2026-08-20","contractor":"АНО ПО РАЗВИТИЮ ГОРОДСКОЙ СРЕДЫ \"МВС СТ\"","roofType":"плоская","facadeType":"облицовка керамическими плитками","entrances":2,"floors":14,"apartments":107,"series":"П-47","timeline":"01. Апреля","contractType":"Договор КР (ПСД разработан)","contractNum":"КРД-001089-26"},{"address":"Мичуринский просп. 25 к.1","status":"4. Начало работ","program":"Прочие","started":"2. Не приступили","cost":16535853.94,"bg":"1. БГ установлен","dateStart":"2026-04-01","dateEnd":"2026-07-10","contractor":"ГБУ \"ОЗЕЛЕНЕНИЕ\"","roofType":"скатная","facadeType":"под расшивку","entrances":4,"floors":5,"apartments":60,"series":"индивидуальный проект","timeline":"01. Апреля","contractType":"Договор КР (ПСД разработан)","contractNum":"КРД-001090-26"},{"address":"Заречная ул. 1 к.1","status":"4. Начало работ","program":"Прочие","started":"2. Не приступили","cost":27181437.65,"bg":"3. НЕ требуется","dateStart":"2026-04-01","dateEnd":"2026-08-20","contractor":"АНО ПО РАЗВИТИЮ ГОРОДСКОЙ СРЕДЫ \"МВС СТ\"","roofType":"плоская","facadeType":"облицовка керамическими плитками","entrances":2,"floors":12,"apartments":108,"series":"П-30","timeline":"01. Апреля","contractType":"Договор КР (ПСД разработан)","contractNum":"КРД-001091-26"},{"address":"Заречная ул. 1 к.2","status":"4. Начало работ","program":"Прочие","started":"2. Не приступили","cost":5247167.75,"bg":"1. БГ установлен","dateStart":"2026-04-01","dateEnd":"2026-06-30","contractor":"ГБУ \"ОЗЕЛЕНЕНИЕ\"","roofType":"скатная","facadeType":"под расшивку","entrances":3,"floors":5,"apartments":45,"series":"индивидуальный проект","timeline":"01. Апреля","contractType":"Договор КР (ПСД разработан)","contractNum":"КРД-001092-26"},{"address":"Филевский бульв. 17","status":"4. Начало работ","program":"Прочие","started":"2. Не приступили","cost":381621.39,"bg":"1. БГ установлен","dateStart":"2026-04-11","dateEnd":"2026-06-30","contractor":"ЗАО РСФ \"РЕМСТРОЙСЕРВИС\"","roofType":"скатная","facadeType":"под расшивку","entrances":1,"floors":4,"apartments":40,"series":"индивидуальный проект","timeline":"11. Апреля","contractType":"Договор КР (ПСД разработан)","contractNum":"КРД-001093-26"},{"address":"Кастанаевская ул. 62","status":"4. Начало работ","program":"Прочие","started":"2. Не приступили","cost":1043045.22,"bg":"1. БГ установлен","dateStart":"2026-04-11","dateEnd":"2026-06-30","contractor":"ЗАО РСФ \"РЕМСТРОЙСЕРВИС\"","roofType":"скатная","facadeType":"под расшивку","entrances":1,"floors":4,"apartments":75,"series":"индивидуальный проект","timeline":"11. Апреля","contractType":"Договор КР (ПСД разработан)","contractNum":"КРД-001094-26"},{"address":"Анохина Академика ул. 26 к.4","status":"4. Начало работ","program":"Прочие","started":"2. Не приступили","cost":10739645.27,"bg":"1. БГ установлен","dateStart":"2026-04-11","dateEnd":"2026-08-20","contractor":"АНО ПО РАЗВИТИЮ ГОРОДСКОЙ СРЕДЫ \"МВС СТ\"","roofType":"плоская","facadeType":"окраска по штукатурке","entrances":1,"floors":10,"apartments":72,"series":"I-515","timeline":"11. Апреля","contractType":"Договор КР (ПСД разработан)","contractNum":"КРД-001095-26"},{"address":"Истринская ул. 10 к.2","status":"4. Начало работ","program":"Прочие","started":"2. Не приступили","cost":33371404.33,"bg":"3. НЕ требуется","dateStart":"2026-04-11","dateEnd":"2026-08-20","contractor":"АНО ПО РАЗВИТИЮ ГОРОДСКОЙ СРЕДЫ \"МВС СТ\"","roofType":"плоская","facadeType":"облицовка керамическими плитками","entrances":3,"floors":12,"apartments":171,"series":"П-30","timeline":"11. Апреля","contractType":"Договор КР (ПСД разработан)","contractNum":"КРД-001096-26"},{"address":"Барвихинская ул. 16 к.2","status":"4. Начало работ","program":"Прочие","started":"2. Не приступили","cost":15379015.57,"bg":"3. НЕ требуется","dateStart":"2026-04-11","dateEnd":"2026-08-20","contractor":"АНО ПО РАЗВИТИЮ ГОРОДСКОЙ СРЕДЫ \"МВС СТ\"","roofType":"плоская","facadeType":"окраска по штукатурке","entrances":2,"floors":9,"apartments":66,"series":"I-515","timeline":"11. Апреля","contractType":"Договор КР (ПСД разработан)","contractNum":"КРД-001097-26"},{"address":"Багратионовский пр. 1 с.1","status":"4. Начало работ","program":"Прочие","started":"2. Не приступили","cost":9320733.29,"bg":"3. НЕ требуется","dateStart":"2026-04-11","dateEnd":"2026-08-20","contractor":"АНО ПО РАЗВИТИЮ ГОРОДСКОЙ СРЕДЫ \"МВС СТ\"","roofType":"плоская","facadeType":"окраска","entrances":1,"floors":8,"apartments":77,"series":"II-18-01-МН","timeline":"11. Апреля","contractType":"Договор КР (ПСД разработан)","contractNum":"КРД-001098-26"},{"address":"Филевская 2-я ул. 5 к.2","status":"4. Начало работ","program":"Прочие","started":"2. Не приступили","cost":6164325.63,"bg":"3. НЕ требуется","dateStart":"2026-04-11","dateEnd":"2026-08-20","contractor":"АНО ПО РАЗВИТИЮ ГОРОДСКОЙ СРЕДЫ \"МВС СТ\"","roofType":"плоская","facadeType":"окраска","entrances":1,"floors":8,"apartments":82,"series":"индивидуальный проект","timeline":"11. Апреля","contractType":"Договор КР (ПСД разработан)","contractNum":"КРД-001099-26"},{"address":"Аминьевское шоссе 13","status":"4. Начало работ","program":"Прочие","started":"2. Не приступили","cost":53701058.82,"bg":"1. БГ установлен","dateStart":"2026-04-11","dateEnd":"2026-08-20","contractor":"ООО \"ВЫМПЕЛСТРОЙ\"","roofType":"плоская","facadeType":"облицовка керамическими плитками","entrances":3,"floors":12,"apartments":176,"series":"индивидуальный проект","timeline":"11. Апреля","contractType":"Договор КР (ПСД разработан)","contractNum":"КРД-001100-26"},{"address":"Филевская Б. ул. 27 к.1","status":"4. Начало работ","program":"Прочие","started":"2. Не приступили","cost":10395258.82,"bg":"1. БГ установлен","dateStart":"2026-04-11","dateEnd":"2026-08-20","contractor":"ООО \"ЛИБРА КОМПАНИ\"","roofType":"плоская","facadeType":"окраска по штукатурке","entrances":1,"floors":10,"apartments":55,"series":"индивидуальный проект","timeline":"11. Апреля","contractType":"Договор КР (ПСД разработан)","contractNum":"КРД-001101-26"},{"address":"Студенческая ул. 34","status":"4. Начало работ","program":"Прочие","started":"2. Не приступили","cost":354480.13,"bg":"1. БГ установлен","dateStart":"2026-04-11","dateEnd":"2026-08-20","contractor":"ООО \"ГАЛС СТРОЙ\"","roofType":"плоская","facadeType":"окраска по штукатурке","entrances":1,"floors":7,"apartments":68,"series":"индивидуальный проект","timeline":"11. Апреля","contractType":"Договор КР (ПСД разработан)","contractNum":"КРД-001102-26"},{"address":"Кутузовский просп. 18","status":"4. Начало работ","program":"Прочие","started":"2. Не приступили","cost":111854001.88,"bg":"1. БГ установлен","dateStart":"2026-04-11","dateEnd":"2026-08-20","contractor":"ООО \"СТК ИНВЕСТ\"","roofType":"скатная","facadeType":"окраска по штукатурке","entrances":12,"floors":7,"apartments":421,"series":"индивидуальный проект","timeline":"11. Апреля","contractType":"Договор КР (ПСД разработан)","contractNum":"КРД-001103-26"},{"address":"Дорогомиловская Б. ул. 7","status":"4. Начало работ","program":"Прочие","started":"2. Не приступили","cost":23403099.65,"bg":"1. БГ установлен","dateStart":"2026-04-11","dateEnd":"2026-08-20","contractor":"ООО \"ПНС\"","roofType":"плоская","facadeType":"окраска по штукатурке","entrances":3,"floors":9,"apartments":105,"series":"индивидуальный проект","timeline":"11. Апреля","contractType":"Договор КР (ПСД разработан)","contractNum":"КРД-001104-26"},{"address":"Филевская Б. ул. 21 к.4","status":"4. Начало работ","program":"Прочие","started":"2. Не приступили","cost":84915000.0,"bg":"3. НЕ требуется","dateStart":"2026-04-11","dateEnd":"2026-08-31","contractor":"ООО \"ПНС\"","roofType":"плоская","facadeType":"облицовка керамическими плитками","entrances":4,"floors":17,"apartments":266,"series":"П-3","timeline":"11. Апреля","contractType":"Договор КР (ПСД разработан)","contractNum":"КРД-001105-26"},{"address":"Толбухина ул. 12 к.2","status":"4. Начало работ","program":"Прочие","started":"2. Не приступили","cost":105793471.55,"bg":"3. НЕ требуется","dateStart":"2026-04-11","dateEnd":"2026-08-31","contractor":"ООО \"ДОМ-СТРОЙ\"","roofType":"плоская","facadeType":"облицовка керамическими плитками","entrances":8,"floors":17,"apartments":272,"series":"П-3/16","timeline":"11. Апреля","contractType":"Договор КР (ПСД разработан)","contractNum":"КРД-001106-26"},{"address":"Новозаводская ул. 25 к.8","status":"4. Начало работ","program":"Прочие","started":"2. Не приступили","cost":109568554.66,"bg":"3. НЕ требуется","dateStart":"2026-04-11","dateEnd":"2026-08-31","contractor":"ООО \"ДОМ-СТРОЙ\"","roofType":"плоская","facadeType":"облицовка керамическими плитками","entrances":8,"floors":17,"apartments":418,"series":"П-3/16","timeline":"11. Апреля","contractType":"Договор КР (ПСД разработан)","contractNum":"КРД-001107-26"},{"address":"Дорогомиловская Б. ул. 11","status":"4. Начало работ","program":"Прочие","started":"2. Не приступили","cost":28890908.08,"bg":"1. БГ установлен","dateStart":"2026-04-11","dateEnd":"2026-08-20","contractor":"ООО \"ДОМ-СТРОЙ\"","roofType":"плоская","facadeType":"окраска","entrances":2,"floors":6,"apartments":56,"series":"индивидуальный проект","timeline":"11. Апреля","contractType":"Договор КР (ПСД разработан)","contractNum":"КРД-001108-26"},{"address":"Василисы Кожиной ул. 20 с.1","status":"4. Начало работ","program":"Прочие","started":"2. Не приступили","cost":193716.65,"bg":"1. БГ установлен","dateStart":"2026-04-11","dateEnd":"2026-06-30","contractor":"ГБУ \"ЖИЛИЩНИК РАЙОНА ФИЛИ-ДАВЫДКОВО\"","roofType":"скатная","facadeType":"окраска по штукатурке","entrances":1,"floors":5,"apartments":79,"series":"индивидуальный проект","timeline":"11. Апреля","contractType":"Договор КР (ПСД разработан)","contractNum":"КРД-001109-26"},{"address":"Филевская Б. ул. 55 к.1","status":"4. Начало работ","program":"Прочие","started":"2. Не приступили","cost":10674758.82,"bg":"1. БГ установлен","dateStart":"2026-04-11","dateEnd":"2026-08-10","contractor":"ООО \"Вершина\"","roofType":"плоская","facadeType":"окраска по штукатурке","entrances":1,"floors":10,"apartments":70,"series":"индивидуальный проект","timeline":"11. Апреля","contractType":"Договор КР (ПСД разработан)","contractNum":"КРД-001110-26"},{"address":"Рублевское шоссе 12 к.1","status":"4. Начало работ","program":"Прочие","started":"2. Не приступили","cost":52387279.41,"bg":"3. НЕ требуется","dateStart":"2026-04-11","dateEnd":"2026-08-20","contractor":"ООО \"СТРОЙСИТИ\"","roofType":"плоская","facadeType":"облицовка керамическими плитками","entrances":4,"floors":9,"apartments":253,"series":"индивидуальный проект","timeline":"11. Апреля","contractType":"Договор КР (ПСД разработан)","contractNum":"КРД-001111-26"},{"address":"Тараса Шевченко наб. 3 к.2","status":"4. Начало работ","program":"Прочие","started":"2. Не приступили","cost":22281659.8,"bg":"1. БГ установлен","dateStart":"2026-04-11","dateEnd":"2026-08-20","contractor":"ГБУ \"ЖИЛИЩНИК РАЙОНА ДОРОГОМИЛОВО\"","roofType":"плоская","facadeType":"облицовка керамическими плитками","entrances":1,"floors":25,"apartments":130,"series":"индивидуальный проект","timeline":"11. Апреля","contractType":"Договор КР (ПСД разработан)","contractNum":"КРД-001112-26"},{"address":"Давыдковская ул. 5","status":"4. Начало работ","program":"Прочие","started":"2. Не приступили","cost":14190723.53,"bg":"1. БГ установлен","dateStart":"2026-04-11","dateEnd":"2026-08-20","contractor":"ГБУ \"ЖИЛИЩНИК РАЙОНА ФИЛИ-ДАВЫДКОВО\"","roofType":"плоская","facadeType":"облицовка керамическими плитками","entrances":1,"floors":9,"apartments":114,"series":"1605","timeline":"11. Апреля","contractType":"Договор КР (ПСД разработан)","contractNum":"КРД-001113-26"},{"address":"Ивана Франко ул. 40 к.1","status":"4. Начало работ","program":"Прочие","started":"2. Не приступили","cost":10144838.24,"bg":"1. БГ установлен","dateStart":"2026-04-11","dateEnd":"2026-08-20","contractor":"ГБУ \"ЖИЛИЩНИК РАЙОНА КУНЦЕВО\"","roofType":"плоская","facadeType":"облицовка керамическими плитками","entrances":1,"floors":9,"apartments":206,"series":"индивидуальный проект","timeline":"11. Апреля","contractType":"Договор КР (ПСД разработан)","contractNum":"КРД-001114-26"},{"address":"Ивана Франко ул. 38 к.1","status":"4. Начало работ","program":"Прочие","started":"2. Не приступили","cost":28833308.82,"bg":"1. БГ установлен","dateStart":"2026-04-11","dateEnd":"2026-08-20","contractor":"ГБУ \"ДОРИНВЕСТ\"","roofType":"плоская","facadeType":"облицовка керамическими плитками","entrances":3,"flows":12,"apartments":188,"series":"I-335","timeline":"11. Апреля","contractType":"Договор КР (ПСД разработан)","contractNum":"КРД-001115-26"},{"address":"Беловежская ул. 21","status":"1. Оплачен","program":"Фасады КБУ","started":"2. Не приступили","cost":28833308.82,"bg":"1. БГ установлен","dateStart":"2025-04-11","dateEnd":"2025-08-20","contractor":"ГБУ \"ДОРИНВЕСТ\"","roofType":"плоская","facadeType":"облицовка керамическими плитками","entrances":3,"floors":12,"apartments":188,"series":"I-335","timeline":"до 2026","contractType":"Договор КР (ПСД разработан)","contractNum":"КРД-001044-25"},{"address":"ГБУ ЖР Проспект Вернадского","status":"2. Завершена (выпущен акт)","program":"Прочие","started":"2. Не приступили","cost":0.0,"bg":"3. НЕ требуется","dateStart":"2025-04-11","dateEnd":"2025-08-20","contractor":"ГБУ \"ЖИЛИЩНИК РАЙОНА ПРОСПЕКТ ВЕРНАДСКОГО\"","roofType":"плоская","facadeType":"облицовка керамическими плитками","entrances":1,"floors":9,"apartments":0,"series":"индивидуальный проект","timeline":"до 2026","contractType":"Договор КР (ПСД разработан)","contractNum":"КРД-001045-25"},{"address":"ГБУ ЖР Очаково-Матвеевское","status":"4. Начало работ","program":"Прочие","started":"2. Не приступили","cost":0.0,"bg":"3. НЕ требуется","dateStart":"2026-04-01","dateEnd":"2026-07-31","contractor":"ГБУ \"ЖИЛИЩНИК РАЙОНА ОЧАКОВО-МАТВЕЕВСКОЕ\"","roofType":"плоская","facadeType":"облицовка керамическими плитками","entrances":1,"floors":9,"apartments":0,"series":"индивидуальный проект","timeline":"01. Апреля","contractType":"Договор КР (ПСД разработан)","contractNum":"КРД-001046-26"},{"address":"ГБУ ЖР Можайского района","status":"4. Начало работ","program":"Прочие","started":"2. Не приступили","cost":0.0,"bg":"3. НЕ требуется","dateStart":"2026-04-01","dateEnd":"2026-07-31","contractor":"ГБУ \"ЖИЛИЩНИК МОЖАЙСКОГО РАЙОНА\"","roofType":"плоская","facadeType":"окраска без штукатурки","entrances":1,"floors":9,"apartments":0,"series":"индивидуальный проект","timeline":"01. Апреля","contractType":"Договор КР (ПСД разработан)","contractNum":"КРД-001047-26"},{"address":"ГБУ ЖР Филевский Парк","status":"4. Начало работ","program":"Прочие","started":"2. Не приступили","cost":0.0,"bg":"3. НЕ требуется","dateStart":"2026-04-01","dateEnd":"2026-07-31","contractor":"ГБУ \"ЖИЛИЩНИК РАЙОНА ФИЛЕВСКИЙ ПАРК\"","roofType":"плоская","facadeType":"облицовка керамическими плитками","entrances":1,"floors":9,"apartments":0,"series":"индивидуальный проект","timeline":"01. Апреля","contractType":"Договор КР (ПСД разработан)","contractNum":"КРД-001048-26"}];
+
+// UTILITIES
+const fmt = (n) => n >= 1e9 ? (n/1e9).toFixed(2)+' млрд ₽' : n >= 1e6 ? (n/1e6).toFixed(1)+' млн ₽' : n >= 1e3 ? (n/1e3).toFixed(0)+' тыс ₽' : n.toFixed(0)+' ₽';
+const count = (arr, key) => {
+  const m = {};
+  arr.forEach(d => { const v = d[key]||'—'; m[v] = (m[v]||0)+1; });
+  return Object.entries(m).sort((a,b)=>b[1]-a[1]);
+};
+const sumBy = (arr, key, valKey) => {
+  const m = {};
+  arr.forEach(d => { const v = d[key]||'—'; m[v] = (m[v]||0) + d[valKey]; });
+  return Object.entries(m).sort((a,b)=>b[1]-a[1]);
+};
+
+// COLORS
+const STATUS_COLORS = {
+  '4. Начало работ': '#00d4aa',
+  '5. Срок начала работ не наступил': '#fbbf24',
+  '6. Планируется исключение': '#f87171',
+  '1. Оплачен': '#4ade80',
+  '2. Завершена (выпущен акт)': '#a78bfa',
+};
+const BG_COLORS = {
+  '1. БГ установлен': '#4ade80',
+  '3. Не установлен БГ': '#f87171',
+  '3. НЕ требуется': '#555570',
+  '2. Куст ': '#60a5fa',
+  '2. В процессе установки': '#fbbf24',
+};
+const PROGRAM_COLORS = {
+  'Прочие': '#60a5fa',
+  'Фасады Модернизация': '#ff6b2c',
+  'Фасады КБУ': '#a78bfa',
+};
+
+// TAB SWITCHING
+document.querySelectorAll('.tab').forEach(t => {
+  t.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+    document.querySelectorAll('.view-panel').forEach(x=>x.classList.remove('active'));
+    t.classList.add('active');
+    document.getElementById('view-'+t.dataset.view).classList.add('active');
+  });
+});
+
+// ===== KPI =====
+const totalCost = DATA.reduce((s,d)=>s+d.cost,0);
+const totalApts = DATA.reduce((s,d)=>s+d.apartments,0);
+const startedCount = DATA.filter(d=>d.started.includes('Приступили к работам')).length;
+const bgInstalled = DATA.filter(d=>d.bg.includes('установлен')).length;
+const kpis = [
+  { label:'Объектов МКД', value:'63', sub:'ЗАО 2026', color:'orange' },
+  { label:'Общая стоимость', value:'3,3', sub:'млрд ₽ по договорам', color:'cyan' },
+  { label:'Приступили к работам', value: startedCount+'', sub:'из 63 объектов', color:'green' },
+  { label:'Не приступили', value:(63-startedCount)+'', sub:'ожидают старта', color:'yellow' },
+  { label:'БГ установлен', value:bgInstalled+'', sub:'из 63 объектов', color:'purple' },
+  { label:'Планируется исключение', value:'2', sub:'объекта', color:'red' },
+];
+document.getElementById('kpi-grid').innerHTML = kpis.map((k,i)=>
+  `<div class="kpi-card ${k.color} animated">
+    <div class="kpi-label">${k.label}</div>
+    <div class="kpi-value">${k.value}</div>
+    <div class="kpi-sub">${k.sub}</div>
+  </div>`
+).join('');
+
+// ===== PIPELINE =====
+const statuses = count(DATA, 'status');
+const pipeColors = {'4. Начало работ':'var(--accent-cyan)','5. Срок начала работ не наступил':'var(--accent-yellow)','1. Оплачен':'var(--accent-green)','2. Завершена (выпущен акт)':'var(--accent-purple)','6. Планируется исключение':'var(--accent-red)'};
+const pipeLabels = {'4. Начало работ':'Начало работ','5. Срок начала работ не наступил':'Срок не наступил','1. Оплачен':'Оплачен','2. Завершена (выпущен акт)':'Завершена','6. Планируется исключение':'Исключение'};
+document.getElementById('pipeline').innerHTML = statuses.map(([s,c])=>
+  `<div class="pipe-stage animated">
+    <div class="pipe-count" style="color:${pipeColors[s]||'#fff'}">${c}</div>
+    <div class="pipe-name">${pipeLabels[s]||s}</div>
+  </div>`
+).join('');
+
+// ===== HORIZONTAL BAR HELPER =====
+function renderHBars(container, data, maxVal, colorFn) {
+  container.innerHTML = data.map(([name,val])=>{
+    const pct = (val/maxVal*100).toFixed(1);
+    const color = colorFn(name);
+    return `<div class="hbar">
+      <div class="hbar-label"><span class="hbar-name">${name}</span><span class="hbar-val">${val}</span></div>
+      <div class="hbar-track"><div class="hbar-fill" style="width:${pct}%;background:${color}"></div></div>
+    </div>`;
+  }).join('');
+}
+
+// PROGRAM CHART
+const programs = count(DATA, 'program');
+renderHBars(document.getElementById('program-chart'), programs, programs[0][1], n=>PROGRAM_COLORS[n]||'#60a5fa');
+
+// BG CHART
+const bgs = count(DATA, 'bg');
+renderHBars(document.getElementById('bg-chart'), bgs, bgs[0][1], n=>BG_COLORS[n]||'#888');
+
+// FACADE CHART
+const facades = count(DATA, 'facadeType');
+const fColors = ['#ff6b2c','#00d4aa','#a78bfa','#fbbf24','#60a5fa','#f87171','#4ade80'];
+renderHBars(document.getElementById('facade-chart'), facades, facades[0][1], (n)=>fColors[facades.findIndex(f=>f[0]===n)%fColors.length]);
+
+// SERIES CHART
+const series = count(DATA, 'series').slice(0,10);
+renderHBars(document.getElementById('series-chart'), series, series[0][1], (n)=>fColors[series.findIndex(f=>f[0]===n)%fColors.length]);
+
+// ===== TIMELINE =====
+const timelineData = count(DATA, 'timeline');
+const tColors = {'01. Апреля':'#4ade80','11. Апреля':'#00d4aa','21. Апреля':'#60a5fa','2. Май.':'#fbbf24','3. Июнь-июль':'#ff6b2c','до 2026':'#a78bfa'};
+renderHBars(document.getElementById('timeline-bars'), timelineData, timelineData[0][1], n=>tColors[n]||'#888');
+
+// GANTT
+function renderGantt() {
+  const months = ['Апр','Май','Июн','Июл','Авг','Сен','Окт'];
+  const monthStart = new Date(2026,3,1); // April 1
+  const monthEnd = new Date(2026,10,1); // Nov 1
+  const totalDays = (monthEnd - monthStart) / (1000*60*60*24);
+  
+  const sorted = [...DATA].filter(d=>d.dateStart && d.dateStart!=='nan').sort((a,b)=>a.dateStart.localeCompare(b.dateStart));
+  
+  let html = `<div class="gantt-header">
+    <div class="gantt-label-col" style="font-size:10px;color:var(--text-muted)">Объект</div>
+    <div class="gantt-months">${months.map((m,i)=>`<div class="gantt-month${i===0?' current':''}">${m}</div>`).join('')}</div>
+  </div>`;
+  
+  sorted.forEach(d => {
+    const ds = new Date(d.dateStart);
+    const de = new Date(d.dateEnd);
+    const startOff = Math.max(0, (ds - monthStart)/(1000*60*60*24));
+    const endOff = Math.min(totalDays, (de - monthStart)/(1000*60*60*24));
+    const left = (startOff/totalDays*100).toFixed(2);
+    const width = Math.max(1,((endOff-startOff)/totalDays*100)).toFixed(2);
+    const color = STATUS_COLORS[d.status] || '#888';
+    
+    html += `<div class="gantt-row">
+      <div class="gantt-row-label">${d.address}</div>
+      <div class="gantt-bar-area">
+        <div class="gantt-bar" style="left:${left}%;width:${width}%;background:${color}80;border-left:2px solid ${color}">
+          <div class="tooltip">
+            <b>${d.address}</b><br>
+            ${d.dateStart} → ${d.dateEnd}<br>
+            ${d.contractor}<br>
+            ${d.cost > 0 ? fmt(d.cost) : 'Стоимость не указана'}
+          </div>
+        </div>
+      </div>
+    </div>`;
+  });
+  
+  document.getElementById('gantt').innerHTML = html;
+}
+renderGantt();
+
+// ===== CONTRACTORS =====
+function renderContractors() {
+  const cData = {};
+  DATA.forEach(d => {
+    if(!cData[d.contractor]) cData[d.contractor] = { count:0, cost:0, addresses:[] };
+    cData[d.contractor].count++;
+    cData[d.contractor].cost += d.cost;
+    cData[d.contractor].addresses.push(d.address);
+  });
+  const sorted = Object.entries(cData).sort((a,b)=>b[1].count-a[1].count);
+  const maxCount = sorted[0][1].count;
+  const maxCost = Math.max(...sorted.map(s=>s[1].cost));
+  
+  document.getElementById('contractor-grid').innerHTML = sorted.map(([name,data])=>
+    `<div class="contractor-card">
+      <div class="contractor-name" title="${name}">${name}</div>
+      <div class="contractor-stats">
+        <div class="contractor-stat">
+          <div class="contractor-stat-val">${data.count}</div>
+          <div class="contractor-stat-label">Объектов</div>
+        </div>
+        <div class="contractor-stat">
+          <div class="contractor-stat-val" style="color:var(--accent-orange);font-size:13px">${data.cost > 0 ? fmt(data.cost) : '—'}</div>
+          <div class="contractor-stat-label">Стоимость</div>
+        </div>
+      </div>
+      <div class="contractor-bar"><div class="contractor-bar-fill" style="width:${(data.count/maxCount*100).toFixed(0)}%"></div></div>
+    </div>`
+  ).join('');
+}
+renderContractors();
+
+// ===== OBJECTS TABLE =====
+let activeFilter = 'all';
+const filters = [
+  {key:'all', label:'Все (63)'},
+  {key:'4. Начало работ', label:'Начало работ (52)'},
+  {key:'5. Срок начала работ не наступил', label:'Срок не наступил (6)'},
+  {key:'1. Оплачен', label:'Оплачен (2)'},
+  {key:'6. Планируется исключение', label:'Исключение (2)'},
+];
+document.getElementById('filter-bar').innerHTML = filters.map(f =>
+  `<button class="filter-btn ${f.key==='all'?'active':''}" data-filter="${f.key}">${f.label}</button>`
+).join('');
+
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    activeFilter = btn.dataset.filter;
+    renderTable();
+  });
+});
+
+function statusBadge(s) {
+  const cls = s.includes('Начало') ? 'work' : s.includes('Срок') ? 'notstarted' : s.includes('исключение') ? 'exclude' : s.includes('Оплачен') ? 'paid' : 'done';
+  const short = s.replace(/^\d+\.\s*/, '');
+  return `<span class="status-badge ${cls}">${short}</span>`;
+}
+function bgBadge(b) {
+  const cls = b.includes('установлен') && !b.includes('Не') ? 'installed' : b.includes('Не установлен') ? 'notinstalled' : b.includes('процессе') ? 'process' : b.includes('Куст') ? 'cluster' : 'notrequired';
+  const short = b.replace(/^\d+\.\s*/, '');
+  return `<span class="bg-badge ${cls}">${short}</span>`;
+}
+
+function renderTable() {
+  const filtered = activeFilter === 'all' ? DATA : DATA.filter(d=>d.status===activeFilter);
+  const thead = document.querySelector('#objects-table thead tr');
+  thead.innerHTML = ['Адрес','Статус','Программа','БГ','Подрядчик','Стоимость','Начало','Окончание','Этаж.','Кв.']
+    .map(h=>`<th>${h}</th>`).join('');
+  
+  const tbody = document.querySelector('#objects-table tbody');
+  tbody.innerHTML = filtered.map(d =>
+    `<tr>
+      <td style="font-weight:500">${d.address}</td>
+      <td>${statusBadge(d.status)}</td>
+      <td style="font-size:10px">${d.program}</td>
+      <td>${bgBadge(d.bg)}</td>
+      <td style="font-size:10px;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="${d.contractor}">${d.contractor}</td>
+      <td style="font-weight:600;color:var(--accent-cyan)">${d.cost > 0 ? fmt(d.cost) : '—'}</td>
+      <td>${d.dateStart}</td>
+      <td>${d.dateEnd}</td>
+      <td>${d.floors||'—'}</td>
+      <td>${d.apartments||'—'}</td>
+    </tr>`
+  ).join('');
+}
+renderTable();
+
+// ===== HEATMAP =====
+function renderHeatmap() {
+  const sorted = [...DATA].sort((a,b) => b.apartments - a.apartments);
+  const maxApt = Math.max(...DATA.map(d=>d.apartments).filter(Boolean));
+  
+  document.getElementById('heatmap-grid').innerHTML = sorted.map(d => {
+    const size = Math.max(0.4, d.apartments / maxApt);
+    const color = STATUS_COLORS[d.status] || '#555';
+    const opacity = 0.5 + size * 0.5;
+    return `<div class="heat-cell" style="background:${color}${Math.round(opacity*40).toString(16).padStart(2,'0')}" title="${d.address}\n${d.apartments} кв., ${d.floors} эт.\n${d.contractor}\n${d.cost>0?fmt(d.cost):'—'}">
+      <div class="heat-num" style="color:${color}">${d.apartments||'?'}</div>
+      <div class="heat-label">${d.address.split(' ').slice(0,2).join(' ')}</div>
+    </div>`;
+  }).join('');
+}
+renderHeatmap();
+
+// FLOORS CHART
+const floors = count(DATA, 'floors');
+renderHBars(document.getElementById('floors-chart'), floors.filter(f=>f[0]!=='0'), floors[0][1], ()=>'var(--accent-cyan)');
+</script>
+</body>
+</html>

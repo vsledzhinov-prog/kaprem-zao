@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>КапРем · Фасады ЗАО 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;700;800;900&family=Golos+Text:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#04070d;--bg2:#080e1a;--bg3:#0c1422;--bg4:#101c2c;
+  --b:#152035;--b2:#1e3048;
+  --t:#d0e2ff;--t2:#4a6888;--t3:#1e3050;
+  --orange:#f97316;--orangeL:rgba(249,115,22,.12);
+  --cyan:#06b6d4;--cyanL:rgba(6,182,212,.1);
+  --green:#22c55e;--amber:#f59e0b;
+}
+html,body{min-height:100vh;background:var(--bg);color:var(--t);font-family:'Golos Text',sans-serif}
+
+.page{max-width:800px;margin:0 auto;padding:60px 24px 80px}
+
+/* LOGO */
+.logo-row{display:flex;align-items:center;gap:12px;margin-bottom:40px}
+.logo-icon{width:44px;height:44px;border-radius:12px;background:var(--orangeL);border:1px solid rgba(249,115,22,.2);display:flex;align-items:center;justify-content:center;font-size:22px}
+.logo-text{font-family:'Unbounded',sans-serif;font-size:14px;font-weight:800;color:var(--orange);letter-spacing:3px;text-transform:uppercase}
+.logo-sub{font-size:11px;color:var(--t2);font-family:'JetBrains Mono',monospace;margin-top:2px}
+
+/* HERO */
+.hero{margin-bottom:48px}
+.hero-title{font-family:'Unbounded',sans-serif;font-size:32px;font-weight:900;line-height:1.2;margin-bottom:10px}
+.hero-title span{color:var(--orange)}
+.hero-desc{font-size:15px;color:var(--t2);line-height:1.6;max-width:600px}
+
+/* STATS ROW */
+.stats{display:flex;gap:8px;margin-bottom:40px;flex-wrap:wrap}
+.stat{padding:10px 16px;background:var(--bg2);border:1px solid var(--b);border-radius:10px;display:flex;align-items:baseline;gap:8px}
+.stat-val{font-family:'Unbounded',sans-serif;font-size:18px;font-weight:800;color:var(--cyan)}
+.stat-label{font-size:11px;color:var(--t2)}
+
+/* CARDS */
+.cards{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:48px}
+@media(max-width:640px){.cards{grid-template-columns:1fr}}
+
+.card{
+  background:var(--bg2);
+  border:1.5px solid var(--b);
+  border-radius:18px;
+  overflow:hidden;
+  cursor:pointer;
+  transition:all .25s;
+  text-decoration:none;
+  color:inherit;
+  display:flex;flex-direction:column;
+}
+.card:hover{
+  border-color:var(--b2);
+  transform:translateY(-4px);
+  box-shadow:0 20px 60px rgba(0,0,0,.4);
+}
+.card-preview{
+  height:180px;
+  background:var(--bg3);
+  position:relative;
+  overflow:hidden;
+  display:flex;align-items:center;justify-content:center;
+}
+.card-preview .preview-icon{
+  font-size:56px;opacity:.6;
+  transition:all .3s;
+}
+.card:hover .preview-icon{opacity:1;transform:scale(1.1)}
+.card-preview::after{
+  content:'';position:absolute;bottom:0;left:0;right:0;
+  height:40px;
+  background:linear-gradient(transparent,var(--bg2));
+}
+
+/* Card 1 accent */
+.card.dashboard .card-preview{
+  background:linear-gradient(135deg,rgba(6,182,212,.08),rgba(249,115,22,.06));
+}
+.card.dashboard .card-accent{background:var(--cyan)}
+.card.dashboard .card-tag{background:var(--cyanL);color:var(--cyan)}
+
+/* Card 2 accent */
+.card.report .card-preview{
+  background:linear-gradient(135deg,rgba(249,115,22,.08),rgba(251,191,36,.06));
+}
+.card.report .card-accent{background:var(--orange)}
+.card.report .card-tag{background:var(--orangeL);color:var(--orange)}
+
+.card-accent{height:3px;width:100%}
+
+.card-body{padding:20px;flex:1;display:flex;flex-direction:column}
+.card-tag{
+  display:inline-block;padding:3px 10px;border-radius:8px;
+  font-size:9px;font-weight:700;font-family:'JetBrains Mono',monospace;
+  text-transform:uppercase;letter-spacing:1px;
+  margin-bottom:10px;align-self:flex-start;
+}
+.card-title{
+  font-family:'Unbounded',sans-serif;
+  font-size:17px;font-weight:700;
+  margin-bottom:8px;
+}
+.card-desc{
+  font-size:12px;color:var(--t2);line-height:1.6;
+  flex:1;
+}
+.card-features{
+  display:flex;flex-wrap:wrap;gap:6px;margin-top:14px;
+}
+.card-feature{
+  padding:3px 8px;border-radius:6px;
+  background:var(--bg3);border:1px solid var(--b);
+  font-size:9px;color:var(--t2);
+  font-family:'JetBrains Mono',monospace;
+}
+
+.card-arrow{
+  display:flex;align-items:center;gap:6px;
+  margin-top:14px;
+  font-size:12px;font-weight:700;color:var(--orange);
+}
+.card-arrow::after{
+  content:'→';font-size:16px;
+  transition:transform .2s;
+}
+.card:hover .card-arrow::after{transform:translateX(4px)}
+
+/* INFO */
+.info{
+  padding:20px;
+  background:var(--bg2);
+  border:1px solid var(--b);
+  border-radius:14px;
+  margin-bottom:40px;
+}
+.info-title{
+  font-family:'Unbounded',sans-serif;
+  font-size:12px;font-weight:700;
+  color:var(--orange);margin-bottom:8px;
+  display:flex;align-items:center;gap:8px;
+}
+.info-text{font-size:12px;color:var(--t2);line-height:1.7}
+.info-text b{color:var(--t);font-weight:700}
+
+/* FOOTER */
+.footer{
+  display:flex;justify-content:space-between;align-items:center;
+  padding-top:20px;border-top:1px solid var(--b);
+  font-size:10px;color:var(--t3);
+  font-family:'JetBrains Mono',monospace;
+}
+
+/* Animation */
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.animated{animation:fadeUp .5s ease-out forwards;opacity:0}
+.animated:nth-child(1){animation-delay:.05s}
+.animated:nth-child(2){animation-delay:.1s}
+.animated:nth-child(3){animation-delay:.15s}
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <div class="logo-row animated">
+    <div class="logo-icon">🏗️</div>
+    <div>
+      <div class="logo-text">КапРем</div>
+      <div class="logo-sub">Система учёта капитального ремонта</div>
+    </div>
+  </div>
+
+  <div class="hero animated">
+    <div class="hero-title">Фасады · <span>ЗАО</span> · 2026</div>
+    <div class="hero-desc">Аналитика и контроль программы капитального ремонта фасадов Западного административного округа Москвы. Интерактивные визуализации для руководства и города.</div>
+  </div>
+
+  <div class="stats animated">
+    <div class="stat"><span class="stat-val">63</span><span class="stat-label">объекта МКД</span></div>
+    <div class="stat"><span class="stat-val">3,3 млрд</span><span class="stat-label">₽ стоимость</span></div>
+    <div class="stat"><span class="stat-val">28</span><span class="stat-label">подрядчиков</span></div>
+    <div class="stat"><span class="stat-val">10</span><span class="stat-label">недель динамики</span></div>
+  </div>
+
+  <div class="cards">
+
+    <a href="dashboard.html" class="card dashboard animated">
+      <div class="card-preview">
+        <div class="preview-icon">📊</div>
+      </div>
+      <div class="card-accent"></div>
+      <div class="card-body">
+        <div class="card-tag">Дашборд</div>
+        <div class="card-title">Сводная аналитика ЗАО</div>
+        <div class="card-desc">Полная интерактивная панель: KPI, воронка статусов, диаграмма Ганта, рейтинг подрядчиков, тепловая карта объектов, банковские гарантии.</div>
+        <div class="card-features">
+          <span class="card-feature">5 вкладок</span>
+          <span class="card-feature">63 объекта</span>
+          <span class="card-feature">28 подрядчиков</span>
+          <span class="card-feature">Gantt</span>
+          <span class="card-feature">Heatmap</span>
+        </div>
+        <div class="card-arrow">Открыть дашборд</div>
+      </div>
+    </a>
+
+    <a href="report.html" class="card report animated">
+      <div class="card-preview">
+        <div class="preview-icon">📋</div>
+      </div>
+      <div class="card-accent"></div>
+      <div class="card-body">
+        <div class="card-tag">Еженедельный отчёт</div>
+        <div class="card-title">Динамика для руководства</div>
+        <div class="card-desc">Отчёт уровня генерального директора: KPI с дельтами, переходы статусов, зона риска, рейтинг подрядчиков, ключевые события, тренды 10 недель.</div>
+        <div class="card-features">
+          <span class="card-feature">10 недель</span>
+          <span class="card-feature">KPI + Δ</span>
+          <span class="card-feature">Риски</span>
+          <span class="card-feature">Рейтинг</span>
+          <span class="card-feature">Events</span>
+        </div>
+        <div class="card-arrow">Открыть отчёт</div>
+      </div>
+    </a>
+
+  </div>
+
+  <div class="info animated">
+    <div class="info-title">📌 О проекте</div>
+    <div class="info-text">
+      <b>КапРем</b> — цифровая экосистема учёта и контроля объёмов капитального ремонта МКД в Москве. Мобильные приложения для инженеров технадзора и представителей подрядчика, административная панель для руководителей, система автоматической генерации исполнительной документации.<br><br>
+      Данные визуализации демонстрируют аналитику по программе фасадов <b>ЗАО на 2026 год</b> — <b>63 объекта</b>, <b>28 подрядчиков</b>, общая стоимость <b>3,3 млрд ₽</b>. Еженедельный отчёт симулирует динамику за 10 недель (март–май 2026) для демонстрации формата отчётности перед генеральным директором и городом.
+    </div>
+  </div>
+
+  <div class="footer">
+    <span>КапРем · Фасады ЗАО · 2026</span>
+    <span>kaprem-app.ru</span>
+  </div>
+
+</div>
+
+</body>
+</html>
